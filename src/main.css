@@ -1,0 +1,23 @@
+/*
+    display
+  flex / position
+  overflow
+    margin / padding
+  width / height
+  border
+    color
+    font
+    animation
+*/
+
+/* Imports */
+@import url("./fonts/montserrat/montserrat.css");
+@import url("./keighly.ca-styles/styles.css");
+
+body {
+  overflow: hidden;
+}
+
+body > div > article:first-of-type {
+	margin-top: 11em;
+}
