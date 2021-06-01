@@ -1,19 +1,17 @@
+/* <-- ESLint Disablers --> */
 /* eslint-disable no-unused-vars */
-/*
-  ---- Imports ----
-*/
-import React, { Component, useState, useEffect } from 'react';
+
+/* <-- Imports --> */
+import React, { useState, useEffect } from 'react';
 import { object } from 'prop-types';
 import {
   createInstances,
-  findStellia,
+  // findStellia,
   // horoscope
 } from './astro.js';
 import './main.css';
 
-/*
-  ---- Navigation UI ----
-*/
+/* <-- Navigation UI --> */
 function Nav() {
   // Return UI
   return (
@@ -34,39 +32,39 @@ function Nav() {
 // const AstroDisplay = ({ year }) => {
 //   console.log(year);
 
-//   //const planets = horoscope._celestialBodies.all;
+// const planets = horoscope._celestialBodies.all;
 
-//   // console.log('forEach testing . . .');
+// console.log('forEach testing . . .');
 
-//   // const signArr = [];
-//   // const houseArr = [];
-//   // const signSet = new Set();
-//   // const houseSet = new Set();
-//   // planets.forEach(planet => {
-//   //   const name = planet.key;
-//   //   const sign = planet.Sign.key;
-//   //   const house = planet.House.id;
+// const signArr = [];
+// const houseArr = [];
+// const signSet = new Set();
+// const houseSet = new Set();
+// planets.forEach(planet => {
+//   const name = planet.key;
+//   const sign = planet.Sign.key;
+//   const house = planet.House.id;
 
-//   //   console.log(`${name}      |   ${sign}   |   ${house}`);
-//   //   if (name !== 'sirius' && name !== 'chiron') {
-//   //     signArr.push(sign);
-//   //     houseArr.push(house);
-//   //     signSet.add(sign);
-//   //     houseSet.add(house);
-//   //   }
-//   // });
+//   console.log(`${name}      |   ${sign}   |   ${house}`);
+//   if (name !== 'sirius' && name !== 'chiron') {
+//     signArr.push(sign);
+//     houseArr.push(house);
+//     signSet.add(sign);
+//     houseSet.add(house);
+//   }
+// });
 
-//   // signSet.forEach(sign => {
-//   //   console.log(sign);
-//   //   const numOfSign = findStellia(signArr, sign);
-//   //   console.log(`${numOfSign} placements in ${sign}`);
-//   // });
+// signSet.forEach(sign => {
+//   console.log(sign);
+//   const numOfSign = findStellia(signArr, sign);
+//   console.log(`${numOfSign} placements in ${sign}`);
+// });
 
-//   // houseSet.forEach(house => {
-//   //   console.log(house);
-//   //   const numOfHouse = findStellia(houseArr, house);
-//   //   console.log(`${numOfHouse} placements in house # ${house}`);
-//   //});
+// houseSet.forEach(house => {
+//   console.log(house);
+//   const numOfHouse = findStellia(houseArr, house);
+//   console.log(`${numOfHouse} placements in house # ${house}`);
+// });
 
 //   // render() {
 //   return (
@@ -76,23 +74,77 @@ function Nav() {
 //   );
 //   // }
 // }
-const AstroForm = (props) => {
-  /* <- Constructor -> REMOVE*/
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     year: 1998,
-  //     month: 2,
-  //     day: 29,
-  //     hour: 9,
-  //     minute: 10,
-  //     latitude: 43.14,
-  //     longitude: -80.25,
-  //     submit: false
-  //   }
-  // }
 
-  // useState Hook
+const AstroDisplay = ({ horoscope }) => {
+  /* <-- Initial Logs --> */
+  console.log(`. . .`);
+  console.log(`Birth Chart:`);
+  console.log(horoscope);
+  console.log(`. . .`);
+
+  /* <-- Date Logs --> */
+  const origin = horoscope.origin;
+  console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
+
+  /* <-- Planet, Sign, House Logs --> */
+  const planets = horoscope._celestialBodies.all;
+  planets.forEach(planet => {
+    const signArr = [];
+    const houseArr = [];
+    const signSet = new Set();
+    const houseSet = new Set();
+    const name = planet.key;
+    const sign = planet.Sign.key;
+    const house = planet.House.id;
+    const degrees = planet.ChartPosition.Ecliptic.ArcDegreesFormatted30;
+    const output = planet.isRetrograde ? `${degrees}r` : `${degrees}`;
+
+    if (name !== 'sirius' && name !== 'chiron') {
+      signArr.push(sign);
+      houseArr.push(house);
+      signSet.add(sign);
+      houseSet.add(house);
+    }
+
+    console.log(`${name}  |  ${sign}  | ${house}`);
+    console.log(output);
+    console.log(planet.ChartPosition);
+  });
+
+  return (
+    <>
+      <p>{horoscope._houseSystem}</p>
+    </>
+  );
+}
+
+const CreateHoroscope = ({ chartData }) => {
+  /* <-- Horoscope --> */
+  const horoscope = createInstances(
+    chartData.year,
+    chartData.month,
+    chartData.day,
+    chartData.hour,
+    chartData.minute,
+    chartData.latitude,
+    chartData.longitude
+  );
+
+  /* <-- Return UI --> */
+  return (
+    <>
+      {chartData.type === 'moment' ? (
+        <ChartOfTheMoment horoscope={horoscope} />
+      ) : (
+        <AstroDisplay horoscope={horoscope} />
+      )}
+    </>
+  );
+}
+
+const AstroForm = ({ birthData }) => {
+  /* <- Hooks -> */
+  // State
   const [formValues, setValues] = useState({
     year: 1998,
     month: 2,
@@ -102,63 +154,23 @@ const AstroForm = (props) => {
     latitude: 43.14,
     longitude: -80.25,
   });
-
   const [submit, setSubmit] = useState(false);
 
-  // useEffect hooks
+  // Effect
   useEffect(() => {
-    console.log(formValues);
+    // console.log(formValues);
+    // for (const [key, value] of Object.entries(birthData)) {
+    //   console.log(`${key}: ${value}`);
+    // }
   }, [formValues])
 
-  // useEffect(() => { setSubmit(true) });
-
+  /* <- Handle Input Changes & Form Submission -> */
   const handleChange = async (e) => {
     setValues({ ...formValues, [e.target.name]: e.target.value });
-    // console.log(allValues);
+    birthData[e.target.name] = e.target.value;
   }
 
-  // /* <- Handle Input Changes & Form Submission -> */
-  // const handleChanges = async (e) => {
-  //   //let birthData = this.props.birthData;
-  //   const name = e.target.name;
-  //   let value;
-
-  //   if (name === 'submit') {
-  //     // Handle form submission
-
-  //     // Update submit state
-  //     e.preventDefault();
-  //     value = true;
-
-  //     // const horoscope = await createInstances(
-  //     //   birthData.year,
-  //     //   birthData.month,
-  //     //   birthData.day,
-  //     //   birthData.hour,
-  //     //   birthData.minute,
-  //     //   birthData.latitude,
-  //     //   birthData.longitude
-  //     // );
-  //     // console.log(birthData);
-  //     // console.log(horoscope);
-  //   } else {
-  //     // Handle input change
-  //     value = e.target.value;
-  //     //birthData[name] = value;
-  //     //console.log(birthData[name]);
-  //   }
-
-  //   // Update state
-  //   // await this.setState({
-  //   //   [name]: value
-  //   // });
-  // }
-
-  /*
-    ---- Return UI ----
-  */
-  // render() {
-  // const birthData = this.props.birthData;
+  /* <-- Return UI --> */
   return (
     <>
       <article>
@@ -181,47 +193,108 @@ const AstroForm = (props) => {
             <button type='button' id='submit' name='submit' onClick={() => setSubmit(true)}>Calculate Chart</button>
           </form>
         ) : (
-          <p>submitted</p>
+          <CreateHoroscope chartData={birthData} />
         )}
       </article>
     </>
   );
-  // }
 }
 
-// class Test extends Component {
-//   render() {
-//     const birthData = this.props.birthData;
-//     birthData.year = 2000;
-//     return (
-//       <>
-//         <article>
-//           <p>birthData: {birthData.year}</p>
-//         </article>
-//       </>
-//     );
-//   }
-// }
+const ChartOfTheMoment = ({ horoscope }) => {
 
-AstroForm.defaultProps = {
-  birthData: [
-    {
-      year: 1998,
-      month: 2,
-      day: 29,
-      hour: 9,
-      minute: 10,
-      latitude: 43.14,
-      longitude: -80.25
-    }
-  ]
+  /* <-- Initial Logs --> */
+  console.log(`Chart of the Moment:`);
+  console.log(horoscope);
+  console.log(`. . .`);
+
+  /* <-- Date Logs --> */
+  const origin = horoscope.origin;
+  console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
+
+  /* <-- Planet, Sign, House Logs --> */
+  const planets = horoscope._celestialBodies.all;
+  planets.forEach(planet => {
+    const name = planet.key;
+    const sign = planet.Sign.key;
+    const house = planet.House.id;
+    const degrees = planet.ChartPosition.Ecliptic.ArcDegreesFormatted30;
+    const output = planet.isRetrograde ? `${degrees}r` : `${degrees}`;
+
+    console.log(`${name}  |  ${sign}  | ${house}`);
+    console.log(output);
+    console.log(planet.ChartPosition);
+  });
+
+  // console.log('forEach testing . . .');
+
+  // const signArr = [];
+  // const houseArr = [];
+  // const signSet = new Set();
+  // const houseSet = new Set();
+  // planets.forEach(planet => {
+  //   const name = planet.key;
+  //   const sign = planet.Sign.key;
+  //   const house = planet.House.id;
+
+  //   console.log(`${name}      |   ${sign}   |   ${house}`);
+  //   if (name !== 'sirius' && name !== 'chiron') {
+  //     signArr.push(sign);
+  //     houseArr.push(house);
+  //     signSet.add(sign);
+  //     houseSet.add(house);
+  //   }
+  // });
+
+  // signSet.forEach(sign => {
+  //   console.log(sign);
+  //   const numOfSign = findStellia(signArr, sign);
+  //   console.log(`${numOfSign} placements in ${sign}`);
+  // });
+
+  // houseSet.forEach(house => {
+  //   console.log(house);
+  //   const numOfHouse = findStellia(houseArr, house);
+  //   console.log(`${numOfHouse} placements in house # ${house}`);
+  // });
+
+  /* <-- Return UI --> */
+  return (
+    <>
+      <article>
+        <h2>Chart of The Moment</h2>
+      </article>
+    </>
+  );
 }
 
+/* <- PropTypes -> */
+ChartOfTheMoment.propTypes = {
+  horoscope: object
+}
 AstroForm.propTypes = {
   birthData: object
 }
+CreateHoroscope.propTypes = {
+  chartData: object
+}
+AstroDisplay.propTypes = {
+  horoscope: object
+}
 
+/* <- Defaults -> */
+const moment = new Date();
+const MOMENTDATA = {
+  type: 'moment',
+  year: moment.getFullYear(),
+  month: moment.getMonth(),
+  day: moment.getDate(),
+  hour: moment.getHours(),
+  minute: moment.getMinutes(),
+  latitude: 43.14,
+  longitude: -80.25,
+}
 const BIRTHDATA = {
+  type: 'birth',
   year: 1998,
   month: 2,
   day: 29,
@@ -231,14 +304,14 @@ const BIRTHDATA = {
   longitude: -80.25
 };
 
+/* <- App() -> */
 function App() {
   return (
     <>
       <Nav />
+      <CreateHoroscope chartData={MOMENTDATA} />
       <AstroForm birthData={BIRTHDATA} />
-      {/* <AstroDisplay /> */}
     </>
   );
 }
-
 export default App;
