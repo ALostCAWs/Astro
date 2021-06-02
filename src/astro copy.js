@@ -47,7 +47,7 @@ const createHoroscope = function (origin, houseSystem, zodiac, aspectPoints, asp
 /*
     ---- Instance Creation ----
 */
-export const createInstances = (year, month, date, hour, minute, latitude, longitude) => {
+export const createInstances = (year, month, date, hour, minute, latitude, longitude, zodiac, houseSystem) => {
   /* <- Origin -> */
   const origin = createOrigin(year, month, date, hour, minute, latitude, longitude);
   /* <- Orbs -> */
@@ -55,8 +55,8 @@ export const createInstances = (year, month, date, hour, minute, latitude, longi
   /* <- Horoscope -> */
   horoscope = createHoroscope(
     origin,
-    'placidus',
-    'tropical',
+    houseSystem,
+    zodiac,
     ['all'],
     ['all'],
     ['major', 'minor'],

@@ -142,7 +142,7 @@ const CreateHoroscope = ({ chartData }) => {
   );
 }
 
-const AstroForm = ({ birthData, months, days, hours, minutes }) => {
+const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSystems }) => {
   /* ---- Hooks ---- */
   /* <- State -> */
   const [formValues, setValues] = useState({
@@ -153,7 +153,7 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
     minute: 10,
     latitude: 43.14,
     longitude: -80.25,
-    zodiacType: 'tropical',
+    zodiac: 'tropical',
     houseSystem: 'placidus',
   });
   const [unknown, setUnknown] = useState(false);
@@ -167,8 +167,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
     // for (const [key, value] of Object.entries(birthData)) {
     //   console.log(`${key}: ${value}`);
     // }
-
-    // <- Get User Location ->
   }, [formValues])
 
   // unknown
@@ -190,6 +188,7 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
 
   // useLocation
   useEffect(() => {
+    // birthChart
     if (useLocation) {
       /* <- Use Location -> */
       // Success
@@ -218,9 +217,13 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
         longitude: 0.00
       });
     }
-    // birthChart
     // momentChart
   }, [useLocation]);
+
+  // zodiac & houseSystem
+  useEffect(() => {
+    // momentChart
+  }, [formValues.zodiac, formValues.houseSystem])
 
   /* <- Handle Input Changes & Form Submission -> */
   const handleChange = async (e) => {
@@ -267,14 +270,14 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
             <input type='text' id='longitude' className='location' name='longitude' value={formValues.longitude} onChange={handleChange} />
             <button type='button' id='useLocation' className='location' name='useLocation' onClick={() => setLocation(useLocation => !useLocation)}>Use my Location</button>
 
-            <label htmlFor='zodiacType' className='system'>Zodiac:</label>
-            <select id='zodiacType' className='system' name='zodiacType' value={formValues.zodiacType} onChange={handleChange}>
-              <option value='tropical'>tropical</option>
+            <label htmlFor='zodiac' className='system'>Zodiac:</label>
+            <select id='zodiac' className='system' name='zodiac' value={formValues.zodiacType} onChange={handleChange}>
+              {zodiacs.map((zodiac) => <option key={zodiac.value} value={zodiac.value}>{zodiac.label}</option>)}
             </select>
 
             <label htmlFor='houseSystem' className='system'>House System:</label>
             <select id='houseSystem' className='system' name='houseSystem' value={formValues.zodiacType} onChange={handleChange}>
-              <option value='placidus'>placidus</option>
+              {houseSystems.map((system) => <option key={system.value} value={system.value}>{system.label}</option>)}
             </select>
             <button type='button' id='submit' name='submit' onClick={() => setSubmit(true)}>Calculate Chart</button>
           </form>
@@ -363,6 +366,8 @@ AstroForm.propTypes = {
   days: array,
   hours: array,
   minutes: array,
+  zodiacs: array,
+  houseSystems: array,
 }
 CreateHoroscope.propTypes = {
   chartData: object
@@ -382,6 +387,8 @@ const MOMENTDATA = {
   minute: moment.getMinutes(),
   latitude: 43.14,
   longitude: -80.25,
+  zodiac: 'tropical',
+  houseSystem: 'placidus',
 }
 const BIRTHDATA = {
   type: 'birth',
@@ -392,7 +399,9 @@ const BIRTHDATA = {
   unknown: false,
   minute: 10,
   latitude: 43.14,
-  longitude: -80.25
+  longitude: -80.25,
+  zodiac: 'tropical',
+  houseSystem: 'placidus',
 };
 /* <-- Populate Select Lists --> */
 const MONTHS = [
@@ -423,6 +432,18 @@ const MINUTES = [];
 for (let i = 0; i < 60; i++) {
   MINUTES.push(i);
 }
+const ZODIACS = [
+  { label: 'Tropical', value: 'tropical' },
+  { label: 'Sidereal', value: 'sidereal' },
+];
+const HOUSESYSTEMS = [
+  { label: 'Placidus', value: 'placidus' },
+  { label: 'Whole Sign', value: 'whole-sign' },
+  { label: 'Equal House', value: 'equal-house' },
+  { label: 'Koch', value: 'koch' },
+  { label: 'Regiomontanus', value: 'regiomontanus' },
+  { label: 'Topocentric', value: 'topocentric' },
+];
 
 /* <- App() -> */
 function App() {
@@ -435,6 +456,8 @@ function App() {
         days={DAYS}
         hours={HOURS}
         minutes={MINUTES}
+        zodiacs={ZODIACS}
+        houseSystems={HOUSESYSTEMS}
       />
       <CreateHoroscope chartData={MOMENTDATA} />
     </>
