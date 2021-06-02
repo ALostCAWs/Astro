@@ -174,33 +174,31 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
   // unknown
   useEffect(() => {
     if (unknown) {
-      // Disable hour & minute select
-
-      // Set hour & min to 00:00
-      formValues.hour = 0;
-      formValues.minute = 0;
+      // Update form
+      setValues({
+        ...formValues,
+        hour: 0,
+        minute: 0
+      });
 
       // Update birthData
-      birthData.hour = 0; // unnecessary ?
-      birthData.minute = 0; // unnecessary ?
       birthData.unknown = true;
-
-      console.log('Unknown birth time');
+    } else {
+      birthData.unknown = false;
     }
   }, [unknown]);
 
   // useLocation
   useEffect(() => {
-    /* <- Use Location -> */
     if (useLocation) {
+      /* <- Use Location -> */
       // Success
       const successFunction = (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        console.log('Location:');
-        console.log(lat);
-        console.log(lon);
+        setValues({
+          ...formValues,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
       }
       // Error
       const errorFunction = (position) => {
@@ -213,10 +211,13 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
         alert('It seems like Geolocation, which is required for this function, is not enabled in your browser.');
       }
     } else {
-      console.log('No location given');
+      /* <- Undo Use Location -> */
+      setValues({
+        ...formValues,
+        latitude: 0.00,
+        longitude: 0.00
+      });
     }
-
-
     // birthChart
     // momentChart
   }, [useLocation]);
@@ -248,12 +249,12 @@ const AstroForm = ({ birthData, months, days, hours, minutes }) => {
             </select>
 
             <label htmlFor='hour' className='time'>Hour:</label>
-            <select id='hour' className='time' name='hour' value={formValues.hour} onChange={handleChange}>
+            <select id='hour' className='time' name='hour' value={formValues.hour} onChange={handleChange} disabled={unknown}>
               {hours.map((hour) => <option key={hour.value} value={hour.value}>{hour.label}</option>)}
             </select>
 
             <label htmlFor='minute' className='time'>Minute:</label>
-            <select id='minute' className='time' name='minute' value={formValues.minute} onChange={handleChange}>
+            <select id='minute' className='time' name='minute' value={formValues.minute} onChange={handleChange} disabled={unknown}>
               {minutes.map((min) => <option key={min} value={min}>{min}</option>)}
             </select>
 
