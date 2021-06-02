@@ -3,7 +3,7 @@
 
 /* <-- Imports --> */
 import React, { useState, useEffect } from 'react';
-import { object } from 'prop-types';
+import { object, array } from 'prop-types';
 import {
   createInstances,
   // findStellia,
@@ -142,7 +142,7 @@ const CreateHoroscope = ({ chartData }) => {
   );
 }
 
-const AstroForm = ({ birthData }) => {
+const AstroForm = ({ birthData, months, days, hours, minutes }) => {
   /* ---- Hooks ---- */
   /* <- State -> */
   const [formValues, setValues] = useState({
@@ -225,36 +225,6 @@ const AstroForm = ({ birthData }) => {
   const handleChange = async (e) => {
     setValues({ ...formValues, [e.target.name]: e.target.value });
     birthData[e.target.name] = e.target.value;
-  }
-
-  /* <-- Populate Select Lists --> */
-  const months = [
-    { label: 'January', value: 0 },
-    { label: 'February', value: 1 },
-    { label: 'March', value: 2 },
-    { label: 'April', value: 3 },
-    { label: 'May', value: 4 },
-    { label: 'June', value: 5 },
-    { label: 'July', value: 6 },
-    { label: 'August', value: 7 },
-    { label: 'September', value: 8 },
-    { label: 'October', value: 9 },
-    { label: 'November', value: 10 },
-    { label: 'December', value: 11 },
-  ];
-  const days = [];
-  for (let i = 1; i < 32; i++) {
-    days.push(i);
-  }
-  const hours = [];
-  for (let i = 0; i < 24; i++) {
-    const label = (i < 12) ? 'AM' : 'PM';
-    const entry = { label: `${i} ${label}`, value: i };
-    hours.push(entry);
-  }
-  const minutes = [];
-  for (let i = 0; i < 60; i++) {
-    minutes.push(i);
   }
 
   /* <-- Return UI --> */
@@ -387,7 +357,11 @@ ChartOfTheMoment.propTypes = {
   horoscope: object
 }
 AstroForm.propTypes = {
-  birthData: object
+  birthData: object,
+  months: array,
+  days: array,
+  hours: array,
+  minutes: array,
 }
 CreateHoroscope.propTypes = {
   chartData: object
@@ -419,13 +393,48 @@ const BIRTHDATA = {
   latitude: 43.14,
   longitude: -80.25
 };
+/* <-- Populate Select Lists --> */
+const MONTHS = [
+  { label: 'January', value: 0 },
+  { label: 'February', value: 1 },
+  { label: 'March', value: 2 },
+  { label: 'April', value: 3 },
+  { label: 'May', value: 4 },
+  { label: 'June', value: 5 },
+  { label: 'July', value: 6 },
+  { label: 'August', value: 7 },
+  { label: 'September', value: 8 },
+  { label: 'October', value: 9 },
+  { label: 'November', value: 10 },
+  { label: 'December', value: 11 },
+];
+const DAYS = [];
+for (let i = 1; i < 32; i++) {
+  DAYS.push(i);
+}
+const HOURS = [];
+for (let i = 0; i < 24; i++) {
+  const label = (i < 12) ? 'AM' : 'PM';
+  const entry = { label: `${i} ${label}`, value: i };
+  HOURS.push(entry);
+}
+const MINUTES = [];
+for (let i = 0; i < 60; i++) {
+  MINUTES.push(i);
+}
 
 /* <- App() -> */
 function App() {
   return (
     <>
       <Nav />
-      <AstroForm birthData={BIRTHDATA} />
+      <AstroForm
+        birthData={BIRTHDATA}
+        months={MONTHS}
+        days={DAYS}
+        hours={HOURS}
+        minutes={MINUTES}
+      />
       <CreateHoroscope chartData={MOMENTDATA} />
     </>
   );
