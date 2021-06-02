@@ -143,8 +143,8 @@ const CreateHoroscope = ({ chartData }) => {
 }
 
 const AstroForm = ({ birthData }) => {
-  /* <- Hooks -> */
-  // State
+  /* ---- Hooks ---- */
+  /* <- State -> */
   const [formValues, setValues] = useState({
     year: 1998,
     month: 2,
@@ -153,16 +153,73 @@ const AstroForm = ({ birthData }) => {
     minute: 10,
     latitude: 43.14,
     longitude: -80.25,
+    zodiacType: 'tropical',
+    houseSystem: 'placidus',
   });
+  const [unknown, setUnknown] = useState(false);
+  const [useLocation, setLocation] = useState(false);
   const [submit, setSubmit] = useState(false);
 
-  // Effect
+  /* <- Effect -> */
+  // formValues
   useEffect(() => {
     // console.log(formValues);
     // for (const [key, value] of Object.entries(birthData)) {
     //   console.log(`${key}: ${value}`);
     // }
+
+    // <- Get User Location ->
   }, [formValues])
+
+  // unknown
+  useEffect(() => {
+    if (unknown) {
+      // Disable hour & minute select
+
+      // Set hour & min to 00:00
+      formValues.hour = 0;
+      formValues.minute = 0;
+
+      // Update birthData
+      birthData.hour = 0; // unnecessary ?
+      birthData.minute = 0; // unnecessary ?
+      birthData.unknown = true;
+
+      console.log('Unknown birth time');
+    }
+  }, [unknown]);
+
+  // useLocation
+  useEffect(() => {
+    /* <- Use Location -> */
+    if (useLocation) {
+      // Success
+      const successFunction = (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        console.log('Location:');
+        console.log(lat);
+        console.log(lon);
+      }
+      // Error
+      const errorFunction = (position) => {
+        alert('Error in retrieving current location.');
+      }
+      // Get location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+      } else {
+        alert('It seems like Geolocation, which is required for this function, is not enabled in your browser.');
+      }
+    } else {
+      console.log('No location given');
+    }
+
+
+    // birthChart
+    // momentChart
+  }, [useLocation]);
 
   /* <- Handle Input Changes & Form Submission -> */
   const handleChange = async (e) => {
@@ -170,33 +227,91 @@ const AstroForm = ({ birthData }) => {
     birthData[e.target.name] = e.target.value;
   }
 
+  /* <-- Populate Select Lists --> */
+  const months = [
+    { label: 'January', value: 0 },
+    { label: 'February', value: 1 },
+    { label: 'March', value: 2 },
+    { label: 'April', value: 3 },
+    { label: 'May', value: 4 },
+    { label: 'June', value: 5 },
+    { label: 'July', value: 6 },
+    { label: 'August', value: 7 },
+    { label: 'September', value: 8 },
+    { label: 'October', value: 9 },
+    { label: 'November', value: 10 },
+    { label: 'December', value: 11 },
+  ];
+  const days = [];
+  for (let i = 1; i < 32; i++) {
+    days.push(i);
+  }
+  const hours = [];
+  for (let i = 0; i < 24; i++) {
+    const label = (i < 12) ? 'AM' : 'PM';
+    const entry = { label: `${i} ${label}`, value: i };
+    hours.push(entry);
+  }
+  const minutes = [];
+  for (let i = 0; i < 60; i++) {
+    minutes.push(i);
+  }
+
   /* <-- Return UI --> */
   return (
-    <>
-      <article>
-        {!submit ? (
+    <article>
+      {!submit ? (
+        <>
+          <h2>Enter Birth Info</h2>
           <form action='' id='birth-data'>
-            <label htmlFor='year'>Year:</label>
-            <input type='text' id='year' name='year' value={formValues.year} onChange={handleChange} />
-            <label htmlFor='month'>Month:</label>
-            <input type='text' id='month' name='month' value={formValues.month} onChange={handleChange} />
-            <label htmlFor='day'>Day:</label>
-            <input type='text' id='day' name='day' value={formValues.day} onChange={handleChange} />
-            <label htmlFor='hour'>Hour:</label>
-            <input type='text' id='hour' name='hour' value={formValues.hour} onChange={handleChange} />
-            <label htmlFor='minute'>Minute:</label>
-            <input type='text' id='minute' name='minute' value={formValues.minute} onChange={handleChange} />
-            <label htmlFor='latitude'>Latitude:</label>
-            <input type='text' id='latitude' name='latitude' value={formValues.latitude} onChange={handleChange} />
-            <label htmlFor='longitude'>Longitude:</label>
-            <input type='text' id='longitude' name='longitude' value={formValues.longitude} onChange={handleChange} />
+            <label htmlFor='year' className='date'>Year:</label>
+            <input type='number' id='year' className='date' name='year' value={formValues.year} onChange={handleChange} />
+
+            <label htmlFor='month' className='date'>Month:</label>
+            <select id='month' className='date' name='month' value={formValues.month} onChange={handleChange}>
+              {months.map((month) => <option key={month.value} value={month.value}>{month.label}</option>)}
+            </select>
+
+            <label htmlFor='day' className='date'>Day:</label>
+            <select id='day' className='date' name='day' value={formValues.day} onChange={handleChange}>
+              {days.map((day) => <option key={day} value={day}>{day}</option>)}
+            </select>
+
+            <label htmlFor='hour' className='time'>Hour:</label>
+            <select id='hour' className='time' name='hour' value={formValues.hour} onChange={handleChange}>
+              {hours.map((hour) => <option key={hour.value} value={hour.value}>{hour.label}</option>)}
+            </select>
+
+            <label htmlFor='minute' className='time'>Minute:</label>
+            <select id='minute' className='time' name='minute' value={formValues.minute} onChange={handleChange}>
+              {minutes.map((min) => <option key={min} value={min}>{min}</option>)}
+            </select>
+
+            <label htmlFor='latitude' className='time'>Unknown:</label>
+            <input type='checkbox' id='unknown' className='time' name='unknown' value={unknown} onChange={() => setUnknown(unknown => !unknown)}></input>
+
+            <label htmlFor='latitude' className='location'>Latitude:</label>
+            <input type='text' id='latitude' className='location' name='latitude' value={formValues.latitude} onChange={handleChange} />
+            <label htmlFor='longitude' className='location'>Longitude:</label>
+            <input type='text' id='longitude' className='location' name='longitude' value={formValues.longitude} onChange={handleChange} />
+            <button type='button' id='useLocation' className='location' name='useLocation' onClick={() => setLocation(useLocation => !useLocation)}>Use my Location</button>
+
+            <label htmlFor='zodiacType' className='system'>Zodiac:</label>
+            <select id='zodiacType' className='system' name='zodiacType' value={formValues.zodiacType} onChange={handleChange}>
+              <option value='tropical'>tropical</option>
+            </select>
+
+            <label htmlFor='houseSystem' className='system'>House System:</label>
+            <select id='houseSystem' className='system' name='houseSystem' value={formValues.zodiacType} onChange={handleChange}>
+              <option value='placidus'>placidus</option>
+            </select>
             <button type='button' id='submit' name='submit' onClick={() => setSubmit(true)}>Calculate Chart</button>
           </form>
-        ) : (
-          <CreateHoroscope chartData={birthData} />
-        )}
-      </article>
-    </>
+        </>
+      ) : (
+        <CreateHoroscope chartData={birthData} />
+      )}
+    </article>
   );
 }
 
@@ -299,6 +414,7 @@ const BIRTHDATA = {
   month: 2,
   day: 29,
   hour: 9,
+  unknown: false,
   minute: 10,
   latitude: 43.14,
   longitude: -80.25
@@ -309,8 +425,8 @@ function App() {
   return (
     <>
       <Nav />
-      <CreateHoroscope chartData={MOMENTDATA} />
       <AstroForm birthData={BIRTHDATA} />
+      <CreateHoroscope chartData={MOMENTDATA} />
     </>
   );
 }
