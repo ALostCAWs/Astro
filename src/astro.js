@@ -11,6 +11,37 @@ export let horoscope;
 /*
     ---- Create Class Instances ----
 */
+const createOrbs = function (
+  conjunction,
+  opposition,
+  square,
+  trine,
+  sextile,
+  quintile,
+  septile,
+  // octile,
+  // novile,
+  semiSextile,
+  quincunx,
+  // sesquiquadrate
+) {
+  const customOrbs = {
+    conjunction,
+    opposition,
+    square,
+    trine,
+    sextile,
+    quintile,
+    septile,
+    // octile,
+    // novile,
+    "semi-sextile": semiSextile,
+    quincunx,
+    // sesquiquadrate
+  }
+  return customOrbs;
+}
+
 const createOrigin = function (year, month, date, hour, minute, latitude, longitude) {
   /*
     <- Params ->
@@ -58,41 +89,10 @@ const createHoroscope = function (origin, houseSystem, zodiac, aspectPoints, asp
   return horoscope;
 }
 
-const createOrbs = function (
-  conjunction,
-  opposition,
-  square,
-  trine,
-  sextile,
-  quintile,
-  septile,
-  // octile,
-  // novile,
-  semiSextile,
-  quincunx,
-  // sesquiquadrate
-) {
-  const customOrbs = {
-    conjunction,
-    opposition,
-    square,
-    trine,
-    sextile,
-    quintile,
-    septile,
-    // octile,
-    // novile,
-    "semi-sextile": semiSextile,
-    quincunx,
-    // sesquiquadrate
-  }
-  return customOrbs;
-}
-
 /*
     ---- Instance Creation ----
 */
-export const createInstances = (year, month, date, hour, minute, latitude, longitude) => {
+export const createInstances = (year, month, date, hour, minute, latitude, longitude, zodiac, houseSystem) => {
   /*
     <- Origin ->
   */
@@ -112,8 +112,8 @@ export const createInstances = (year, month, date, hour, minute, latitude, longi
   */
   horoscope = createHoroscope(
     origin,
-    'placidus',
-    'tropical',
+    houseSystem,
+    zodiac,
     ['all'],
     ['all'],
     ['major', 'minor'],

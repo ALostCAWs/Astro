@@ -3,7 +3,7 @@
 
 /* <-- Imports --> */
 import React, { useState, useEffect } from 'react';
-import { object, array } from 'prop-types';
+import { object, array, bool } from 'prop-types';
 import {
   createInstances,
   // findStellia,
@@ -75,7 +75,7 @@ function Nav() {
 //   // }
 // }
 
-const AstroDisplay = ({ horoscope }) => {
+const AstroDisplay = ({ horoscope, unknown }) => {
   /* <-- Initial Logs --> */
   console.log(`. . .`);
   console.log(`Birth Chart:`);
@@ -113,7 +113,13 @@ const AstroDisplay = ({ horoscope }) => {
 
   return (
     <>
-      <p>{horoscope._houseSystem}</p>
+      <article>
+        {!unknown ? (
+          <p>known</p>
+        ) : (
+          <p>unknown</p>
+        )}
+      </article>
     </>
   );
 }
@@ -127,8 +133,11 @@ const CreateHoroscope = ({ chartData }) => {
     chartData.hour,
     chartData.minute,
     chartData.latitude,
-    chartData.longitude
+    chartData.longitude,
+    chartData.zodiac,
+    chartData.houseSystem
   );
+
 
   /* <-- Return UI --> */
   return (
@@ -136,7 +145,10 @@ const CreateHoroscope = ({ chartData }) => {
       {chartData.type === 'moment' ? (
         <ChartOfTheMoment horoscope={horoscope} />
       ) : (
-        <AstroDisplay horoscope={horoscope} />
+        <AstroDisplay
+          horoscope={horoscope}
+          unknown={chartData.unknown}
+        />
       )}
     </>
   );
@@ -188,16 +200,19 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
 
   // useLocation
   useEffect(() => {
-    // birthChart
     if (useLocation) {
       /* <- Use Location -> */
       // Success
       const successFunction = (position) => {
+        // birthChart
         setValues({
           ...formValues,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
         });
+        // momentChart
+        MOMENTDATA.latitude = formValues.latitude;
+        MOMENTDATA.longitude = formValues.longitude;
       }
       // Error
       const errorFunction = (position) => {
@@ -211,29 +226,32 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
       }
     } else {
       /* <- Undo Use Location -> */
+      // birthChart
       setValues({
         ...formValues,
         latitude: 0.00,
         longitude: 0.00
       });
+      // momentChart
+      MOMENTDATA.latitude = 0;
+      MOMENTDATA.longitude = 0;
     }
-    // momentChart
   }, [useLocation]);
 
-  // zodiac & houseSystem
-  useEffect(() => {
-    // momentChart
-  }, [formValues.zodiac, formValues.houseSystem])
-
   /* <- Handle Input Changes & Form Submission -> */
-  const handleChange = async (e) => {
+  const handleChange = (e) => {
     setValues({ ...formValues, [e.target.name]: e.target.value });
     birthData[e.target.name] = e.target.value;
+
+    if (e.target.name === 'zodiac' || e.target.name === 'houseSystem') {
+      MOMENTDATA[e.target.name] = e.target.value;
+    }
   }
 
   /* <-- Return UI --> */
   return (
     <article>
+
       {!submit ? (
         <>
           <h2>Enter Birth Info</h2>
@@ -261,13 +279,13 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
               {minutes.map((min) => <option key={min} value={min}>{min}</option>)}
             </select>
 
-            <label htmlFor='latitude' className='time'>Unknown:</label>
+            <label htmlFor='unknown' className='time'>Unknown:</label>
             <input type='checkbox' id='unknown' className='time' name='unknown' value={unknown} onChange={() => setUnknown(unknown => !unknown)}></input>
 
             <label htmlFor='latitude' className='location'>Latitude:</label>
-            <input type='text' id='latitude' className='location' name='latitude' value={formValues.latitude} onChange={handleChange} />
+            <input type='number' id='latitude' className='location' name='latitude' min='-90.00' max='90.00' value={formValues.latitude} onChange={handleChange} />
             <label htmlFor='longitude' className='location'>Longitude:</label>
-            <input type='text' id='longitude' className='location' name='longitude' value={formValues.longitude} onChange={handleChange} />
+            <input type='number' id='longitude' className='location' name='longitude' min='-90.00' max='90.00' value={formValues.longitude} onChange={handleChange} />
             <button type='button' id='useLocation' className='location' name='useLocation' onClick={() => setLocation(useLocation => !useLocation)}>Use my Location</button>
 
             <label htmlFor='zodiac' className='system'>Zodiac:</label>
@@ -285,34 +303,36 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
       ) : (
         <CreateHoroscope chartData={birthData} />
       )}
+      <CreateHoroscope chartData={MOMENTDATA} />
     </article>
   );
 }
 
 const ChartOfTheMoment = ({ horoscope }) => {
-
   /* <-- Initial Logs --> */
   console.log(`Chart of the Moment:`);
   console.log(horoscope);
+  console.log(horoscope.origin);
+  console.log(horoscope._houseSystem);
   console.log(`. . .`);
 
-  /* <-- Date Logs --> */
-  const origin = horoscope.origin;
-  console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
+  // /* <-- Date Logs --> */
+  // const origin = horoscope.origin;
+  // console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
 
-  /* <-- Planet, Sign, House Logs --> */
-  const planets = horoscope._celestialBodies.all;
-  planets.forEach(planet => {
-    const name = planet.key;
-    const sign = planet.Sign.key;
-    const house = planet.House.id;
-    const degrees = planet.ChartPosition.Ecliptic.ArcDegreesFormatted30;
-    const output = planet.isRetrograde ? `${degrees}r` : `${degrees}`;
+  // /* <-- Planet, Sign, House Logs --> */
+  // const planets = horoscope._celestialBodies.all;
+  // planets.forEach(planet => {
+  //   const name = planet.key;
+  //   const sign = planet.Sign.key;
+  //   const house = planet.House.id;
+  //   const degrees = planet.ChartPosition.Ecliptic.ArcDegreesFormatted30;
+  //   const output = planet.isRetrograde ? `${degrees}r` : `${degrees}`;
 
-    console.log(`${name}  |  ${sign}  | ${house}`);
-    console.log(output);
-    console.log(planet.ChartPosition);
-  });
+  //   console.log(`${name}  |  ${sign}  | ${house}`);
+  //   console.log(output);
+  //   console.log(planet.ChartPosition);
+  // });
 
   // console.log('forEach testing . . .');
 
@@ -351,6 +371,8 @@ const ChartOfTheMoment = ({ horoscope }) => {
     <>
       <article>
         <h2>Chart of The Moment</h2>
+        <p>Zodiac: {horoscope._zodiac}</p>
+        <p>House System: {horoscope._houseSystem}</p>
       </article>
     </>
   );
@@ -370,10 +392,11 @@ AstroForm.propTypes = {
   houseSystems: array,
 }
 CreateHoroscope.propTypes = {
-  chartData: object
+  chartData: object,
 }
 AstroDisplay.propTypes = {
-  horoscope: object
+  horoscope: object,
+  unknown: bool,
 }
 
 /* <- Defaults -> */
@@ -385,6 +408,7 @@ const MOMENTDATA = {
   day: moment.getDate(),
   hour: moment.getHours(),
   minute: moment.getMinutes(),
+  unknown: false,
   latitude: 43.14,
   longitude: -80.25,
   zodiac: 'tropical',
@@ -459,7 +483,7 @@ function App() {
         zodiacs={ZODIACS}
         houseSystems={HOUSESYSTEMS}
       />
-      <CreateHoroscope chartData={MOMENTDATA} />
+
     </>
   );
 }
