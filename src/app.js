@@ -114,10 +114,13 @@ const AstroDisplay = ({ horoscope, unknown }) => {
   return (
     <>
       <article>
+        <h2>Chart of The Moment</h2>
+        <p>Zodiac: {horoscope._zodiac}</p>
+        <p>House System: {horoscope._houseSystem}</p>
         {!unknown ? (
-          <p>known</p>
+          <>{planets.map((p) => (<p key={p.key}>{p.key} is in {p.Sign.key} in House #{p.House.id}</p>))}</>
         ) : (
-          <p>unknown</p>
+          <>{planets.map((p) => (<p key={p.key}>{p.key} is in {p.Sign.key}</p>))}</>
         )}
       </article>
     </>
@@ -321,7 +324,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
   // console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
 
   // /* <-- Planet, Sign, House Logs --> */
-  // const planets = horoscope._celestialBodies.all;
+  const planets = horoscope._celestialBodies.all;
   // planets.forEach(planet => {
   //   const name = planet.key;
   //   const sign = planet.Sign.key;
@@ -373,6 +376,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
         <h2>Chart of The Moment</h2>
         <p>Zodiac: {horoscope._zodiac}</p>
         <p>House System: {horoscope._houseSystem}</p>
+        <>{planets.map((p) => (<p key={p.key}>{p.key} is in {p.Sign.key} in House #{p.House.id}</p>))}</>
       </article>
     </>
   );
