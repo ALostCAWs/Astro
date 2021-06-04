@@ -47,7 +47,7 @@ const GetDegreesMinutes = ({ degreesFormatted }) => {
 
 const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitude }) => {
   const dd = (day < 10) ? `0${day}` : `${day}`;
-  const mm = (month < 10) ? `0${month}` : `${month}`;
+  const mm = ((month + 1) < 10) ? `0${month + 1}` : `${month + 1}`;
   const date = `${dd}-${mm}-${year}`;
   let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
   time = (hour < 12) ? time += `AM` : time += `PM`;
@@ -58,12 +58,13 @@ const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitu
   );
 }
 
+/* ---- Birth Chart Display ---- */
 const AstroDisplay = ({ horoscope, unknown }) => {
-  /* <-- Initial Logs --> */
+  /* <-- Initial Logs -->
   console.log(`. . .`);
   console.log(`Birth Chart:`);
   console.log(horoscope);
-  console.log(`. . .`);
+  console.log(`. . .`); */
 
   /* <-- Date Logs --> */
   const origin = horoscope.origin;
@@ -131,13 +132,13 @@ const AstroDisplay = ({ horoscope, unknown }) => {
   );
 }
 
-/* ---- Moment Display ---- */
+/* ---- Moment Chart Display ---- */
 const ChartOfTheMoment = ({ horoscope }) => {
-  /* <-- Initial Logs --> */
+  /* <-- Initial Logs -->
   console.log(`Chart of the Moment:`);
   console.log(horoscope);
   console.log(horoscope.origin);
-  console.log(`. . .`);
+  console.log(`. . .`); */
 
   // /* <-- Variable Declarations --> */
   const origin = horoscope.origin;
@@ -234,15 +235,16 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   // unknown
   useEffect(() => {
     if (unknown) {
+      // Update birthData
+      birthData.unknown = true;
+      birthData.hour = 0;
+      birthData.minute = 0;
       // Update form
       setValues({
         ...formValues,
         hour: 0,
         minute: 0
       });
-
-      // Update birthData
-      birthData.unknown = true;
     } else {
       birthData.unknown = false;
     }
