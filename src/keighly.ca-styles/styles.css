@@ -125,32 +125,6 @@ div + article {
 	margin-top: 11em;
 }
 
-/* ---- Moment Chart Article ---- */
-.moment > h2,
-.moment> div:first-of-type {
-	margin-bottom: 1em;
-}
-.moment > div:first-of-type {
-	display: flex;
-	flex-flow: column wrap;
-	justify-content: flex-start;
-	align-items: flex-start;
-}
-.moment > div > p {
-	margin-top: .8em;
-}
-/* <- CSS Grid -> */
-.moment > div.chart {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(min(50px, 20%), 6fr)) 1fr;
-	grid-template-rows: repeat(12, 1fr);
-	justify-content: center;
-	justify-items: left;
-}
-.moment > div.chart > p.house {
-	justify-self: center;
-}
-
 /* <- All Articles -> */
 div > article {
 	margin: 0 auto;
@@ -163,6 +137,33 @@ div > article h1,
 div > article h2 {
 	text-transform: uppercase;
 	letter-spacing: 2px;
+}
+
+/* ---- Chart Display ---- */
+article > h2,
+article > div:first-of-type {
+	margin-bottom: 1em;
+}
+/* .birth > div:first-of-type, */
+article > div:first-of-type {
+	display: flex;
+	flex-flow: column wrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+article > div > p {
+	margin-top: .8em;
+}
+/* <- CSS Grid -> */
+article > div.chart {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(min(50px, 20%), 6fr)) 1fr;
+	grid-template-rows: repeat(12, 1fr);
+	justify-content: center;
+	justify-items: left;
+}
+article > div.chart > p.house {
+	justify-self: center;
 }
 
 /* ---- Form ---- */

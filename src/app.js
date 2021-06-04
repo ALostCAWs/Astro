@@ -40,8 +40,6 @@ const GetMethods = ({ zodiac, houseSystem }) => {
 const GetDegreesMinutes = ({ degreesFormatted }) => {
   const deg = degreesFormatted.slice(0, 4).trim();
   const minSec = degreesFormatted.slice(deg.length + 1, degreesFormatted.length).trim();
-  console.log(deg);
-  console.log(minSec);
   return (
     <p className='degrees'>{deg} {minSec}</p>
   );
@@ -53,8 +51,8 @@ const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitu
   const date = `${dd}-${mm}-${year}`;
   let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
   time = (hour < 12) ? time += `AM` : time += `PM`;
-  const EW = (longitude > 0) ? `E` : `W`;
-  const NS = (latitude > 0) ? `N` : `S`;
+  const EW = (longitude >= 0) ? `E` : `W`;
+  const NS = (latitude >= 0) ? `N` : `S`;
   return (
     <p>{date}, {time} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>
   );
@@ -69,7 +67,6 @@ const AstroDisplay = ({ horoscope, unknown }) => {
 
   /* <-- Date Logs --> */
   const origin = horoscope.origin;
-  console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
 
   /* <-- Planet, Sign, House Logs --> */
   const planets = horoscope._celestialBodies.all;
@@ -90,23 +87,45 @@ const AstroDisplay = ({ horoscope, unknown }) => {
       signSet.add(sign);
       houseSet.add(house);
     }
-
-    console.log(`${name}  |  ${sign}  | ${house}`);
-    console.log(output);
-    console.log(planet.ChartPosition);
   });
 
   return (
     <>
       <article className='birth'>
         <h2>Birth Chart</h2>
-        <p>Zodiac: {horoscope._zodiac}</p>
-        <p>House System: {horoscope._houseSystem}</p>
-        {!unknown ? (
-          <>{planets.map((p) => (<p key={p.key}>{p.key} is in {p.Sign.key} in House #{p.House.id}</p>))}</>
-        ) : (
-          <>{planets.map((p) => (<p key={p.key}>{p.key} is in {p.Sign.key}</p>))}</>
-        )}
+        <div>
+          <GetDateTimeLocation
+            year={origin.year} month={origin.month} day={origin.date}
+            hour={origin.hour} minute={origin.minute}
+            latitude={origin.latitude}
+            longitude={origin.longitude}
+          />
+          <GetMethods
+            zodiac={horoscope._zodiac}
+            houseSystem={horoscope._houseSystem}
+          />
+        </div>
+        <div className='chart'>
+          {!unknown ? (
+            <>{planets.map((p) => (
+              <>
+                <p className='planet' key={p.label}>{p.label}</p>
+                <p className='sign' key={p.label + p.Sign.label}>{p.Sign.label}</p>
+                <GetDegreesMinutes degreesFormatted={p.ChartPosition.Ecliptic.ArcDegreesFormatted30} />
+                <p className='house' key={p.label + p.House.id}>{p.House.id}</p>
+              </>
+            ))}</>
+          ) : (
+            <>{planets.map((p) => (
+              <>
+                <p className='planet' key={p.label}>{p.label}</p>
+                <p className='sign' key={p.label + p.Sign.label}>{p.Sign.label}</p>
+                <GetDegreesMinutes degreesFormatted={p.ChartPosition.Ecliptic.ArcDegreesFormatted30} />
+                <p className='house' key={p.label + p.House.id}>Approx.</p>
+              </>
+            ))}</>
+          )}
+        </div>
       </article>
     </>
   );
@@ -118,45 +137,12 @@ const ChartOfTheMoment = ({ horoscope }) => {
   console.log(`Chart of the Moment:`);
   console.log(horoscope);
   console.log(horoscope.origin);
-  console.log(horoscope._houseSystem);
   console.log(`. . .`);
 
   // /* <-- Variable Declarations --> */
   const origin = horoscope.origin;
   const planets = horoscope._celestialBodies.all;
-  // console.log(`${origin.year}-${origin.month}-${origin.date} ${origin.hour}:${origin.minute}`);
 
-  // /* <-- Planet, Sign, House Logs --> */
-
-  // const signArr = [];
-  // const houseArr = [];
-  // const signSet = new Set();
-  // const houseSet = new Set();
-  // planets.forEach(planet => {
-  //   const name = planet.key;
-  //   const sign = planet.Sign.key;
-  //   const house = planet.House.id;
-
-  //   console.log(`${name}      |   ${sign}   |   ${house}`);
-  //   if (name !== 'sirius' && name !== 'chiron') {
-  //     signArr.push(sign);
-  //     houseArr.push(house);
-  //     signSet.add(sign);
-  //     houseSet.add(house);
-  //   }
-  // });
-
-  // signSet.forEach(sign => {
-  //   console.log(sign);
-  //   const numOfSign = findStellia(signArr, sign);
-  //   console.log(`${numOfSign} placements in ${sign}`);
-  // });
-
-  // houseSet.forEach(house => {
-  //   console.log(house);
-  //   const numOfHouse = findStellia(houseArr, house);
-  //   console.log(`${numOfHouse} placements in house # ${house}`);
-  // });
   /* <-- Return UI --> */
   return (
     <>
@@ -202,7 +188,6 @@ const CreateHoroscope = ({ chartData }) => {
     chartData.zodiac,
     chartData.houseSystem
   );
-
 
   /* <-- Return UI --> */
   return (
@@ -268,16 +253,19 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
     if (useLocation) {
       /* <- Use Location -> */
       // Success
-      const successFunction = (position) => {
+      const successFunction = async (position) => {
+        // Process Data
+        const lat = Math.round((position.coords.latitude + Number.EPSILON) * 100) / 100
+        const lon = Math.round((position.coords.longitude + Number.EPSILON) * 100) / 100
+        // momentChart
+        MOMENTDATA.latitude = lat;
+        MOMENTDATA.longitude = lon;
         // birthChart
         setValues({
           ...formValues,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          latitude: lat,
+          longitude: lon,
         });
-        // momentChart
-        MOMENTDATA.latitude = formValues.latitude;
-        MOMENTDATA.longitude = formValues.longitude;
       }
       // Error
       const errorFunction = (position) => {
@@ -291,15 +279,15 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
       }
     } else {
       /* <- Undo Use Location -> */
+      // momentChart
+      MOMENTDATA.latitude = 0;
+      MOMENTDATA.longitude = 0;
       // birthChart
       setValues({
         ...formValues,
         latitude: 0.00,
         longitude: 0.00
       });
-      // momentChart
-      MOMENTDATA.latitude = 0;
-      MOMENTDATA.longitude = 0;
     }
   }, [useLocation]);
 
@@ -404,8 +392,8 @@ GetDateTimeLocation.propTypes = {
   day: number,
   hour: number,
   minute: number,
-  latitude: string,
-  longitude: string,
+  latitude: number,
+  longitude: number,
 }
 GetDegreesMinutes.propTypes = {
   degreesFormatted: string,
