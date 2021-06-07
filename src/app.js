@@ -93,7 +93,7 @@ const DisplayDateTimeLocation = ({ origin, zodiac, houseSystem, unknown }) => {
 const DisplayPlanetData = ({ planet, unknown }) => {
   /* Skip over non-planets that appear in the array */
   /* Avoid display of houses when birth time is unknown */
-  if (planet !== 'Chiron' && planet !== 'Sirius') {
+  if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
     return (
       <>
         <p className='planet'>{planet.label}</p>
