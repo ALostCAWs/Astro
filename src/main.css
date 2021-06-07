@@ -17,7 +17,3 @@
 body {
   overflow: hidden;
 }
-
-body > div > article:first-of-type {
-	margin-top: 11em;
-}

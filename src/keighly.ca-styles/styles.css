@@ -21,6 +21,7 @@
 	--accent-color: #4ecca3;
 	--overlay-color: rgba(34, 41, 49, 0.822);
 	--font-color: #f5f5f3;
+	--font-color-warning: #FCAB10;
 
 	/* <- Typography -> */
 	--main-font: "Montserrat", sans-serif;
@@ -121,7 +122,7 @@ nav > ul li:hover::after {
 }
 
 /* <- Birth Chart Article -> */
-div + article {
+body > div > article:first-of-type {
 	margin-top: 11em;
 }
 
@@ -144,16 +145,26 @@ article > h2,
 article > div:first-of-type {
 	margin-bottom: 1em;
 }
-/* .birth > div:first-of-type, */
 article > div:first-of-type {
 	display: flex;
 	flex-flow: column wrap;
 	justify-content: flex-start;
 	align-items: flex-start;
 }
-article > div > p {
+article > div > p.unknown {
+	margin-top: 2em;
+}
+article > div > p,
+article > div > p.unknown ~ p.unknown {
 	margin-top: .8em;
 }
+article > div > p {
+	color: var(--font-color);
+}
+article > div > p.unknown {
+	color: var(--font-color-warning);
+}
+
 /* <- CSS Grid -> */
 article > div.chart {
 	display: grid;
@@ -254,10 +265,10 @@ div.system > label.system {
 		--type-scale: 1.2;
 	}
 
-	body > article:first-of-type,
-	body > article:first-of-type:not([class="intro"]) {
-		margin-top: 16em;
-	}
+	/* <- Birth Chart Article -> */
+	body > div > article:first-of-type {
+	margin-top: 14em;
+}
 
 	.intro {
 		width: 80%;
@@ -306,47 +317,12 @@ div.system > label.system {
 		margin-right: 3em;
 	}
 
-	body > article:first-of-type {
+	div > article:first-of-type {
 		margin-top: 12em;
 	}
 
-	.intro {
-		margin-bottom: 70em;
-		width: 70%;
-	}
-
-	body > article:first-of-type:not([class="intro"]) {
-		margin-top: 12em;
-	}
-
-	body > article:not([class="intro"]) {
-		margin: 0 auto;
-		margin-top: 4em;
-		max-width: 100%;
-		text-align: center;
-	}
-
-	body > article:not([class="intro"]) h2 + p {
-		width: 50%;
-		line-height: 1.5;
-	}
-
-	article > article:first-of-type {
-		margin-top: 10em;
-	}
-
-	article > div + div {
-		min-width: 50%;
-		max-width: 50%;
-		text-align: left;
-	}
-
-	article > div + div h3 a {
-		color: #4ecca3;
-	}
-
-	article > div + div h4 {
-		font-size: var(--h5);
+	div > article.moment {
+		margin-top: 8em;
 	}
 
 	article > div + div p {

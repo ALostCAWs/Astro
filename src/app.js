@@ -1,17 +1,14 @@
-/* <-- ESLint Disablers --> */
+/* ---- ESLint Disablers ---- */
 /* eslint-disable no-unused-vars */
 
-/* <-- Imports --> */
+/* ---- Imports Section */
 import React, { useState, useEffect } from 'react';
 import { object, array, bool, string, number } from 'prop-types';
-import {
-  createInstances,
-  // findStellia,
-  // horoscope
-} from './astro.js';
+import { createInstances } from './astro.js';
 import './main.css';
+/* End ---- */
 
-/* <-- Navigation UI --> */
+/* ---- Navigation UI ---- */
 const Nav = () => {
   // Return UI
   return (
@@ -29,6 +26,7 @@ const Nav = () => {
   );
 }
 
+/* ---- Get Data for Display Components Section */
 const GetMethods = ({ zodiac, houseSystem }) => {
   const method = zodiac.charAt(0).toUpperCase() + zodiac.slice(1);
   const system = houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);
@@ -36,41 +34,111 @@ const GetMethods = ({ zodiac, houseSystem }) => {
     <p>Methods: {method} & {system}</p>
   );
 }
-
-const GetDegreesMinutes = ({ degreesFormatted }) => {
-  const deg = degreesFormatted.slice(0, 4).trim();
-  const minSec = degreesFormatted.slice(deg.length + 1, degreesFormatted.length).trim();
-  return (
-    <p className='degrees'>{deg} {minSec}</p>
-  );
-}
-
-const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitude }) => {
+const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitude, unknown }) => {
   const dd = (day < 10) ? `0${day}` : `${day}`;
   const mm = ((month + 1) < 10) ? `0${month + 1}` : `${month + 1}`;
   const date = `${dd}-${mm}-${year}`;
-  let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
-  time = (hour < 12) ? time += `AM` : time += `PM`;
   const EW = (longitude >= 0) ? `E` : `W`;
   const NS = (latitude >= 0) ? `N` : `S`;
+
+  // Avoid display & calculations related to birth time if it's unknown
+  if (!unknown || unknown == null) {
+    let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
+    time = (hour < 12) ? time += `AM` : time += `PM`;
+    return (<p>{date}, {time} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>);
+  } else {
+    return (<p>{date} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>);
+  }
+}
+/* End ---- */
+
+/* ---- Display Components */
+const DisplayDegreesMinutes = ({ degreesFormatted, retrograde }) => {
+  const deg = degreesFormatted.slice(0, 4).trim();
+  const minSec = degreesFormatted.slice(deg.length + 1, degreesFormatted.length).trim();
   return (
-    <p>{date}, {time} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>
+    <>
+      {(retrograde) ? (
+        <p className='degrees'>{deg} {minSec} R</p>
+      ) : (
+        <p className='degrees'>{deg} {minSec}</p>
+      )}
+    </>
   );
 }
+const DisplayDateTimeLocation = ({ origin, zodiac, houseSystem, unknown }) => {
+  return (
+    <>
+      <GetDateTimeLocation
+        year={origin.year} month={origin.month} day={origin.date}
+        hour={origin.hour} minute={origin.minute}
+        latitude={origin.latitude} longitude={origin.longitude}
+        unknown={unknown}
+      />
+      <GetMethods
+        zodiac={zodiac}
+        houseSystem={houseSystem}
+      />
+      {(unknown && unknown != null) ? (
+        <>
+          <p className='unknown'>* Houses cannot be calculated due to unknown birth time</p>
+          <p className='unknown'>* Degrees & Minutes / Seconds are approx. due to unknown birth time</p>
+        </>
+      ) : (
+        null
+      )}
+    </>
+  );
+}
+const DisplayPlanetData = ({ planet, unknown }) => {
+  /* Skip over non-planets that appear in the array */
+  /* Avoid display of houses when birth time is unknown */
+  if (planet !== 'Chiron' && planet !== 'Sirius') {
+    return (
+      <>
+        <p className='planet'>{planet.label}</p>
+        <p className='sign'>{planet.Sign.label}</p>
+        <DisplayDegreesMinutes
+          degreesFormatted={planet.ChartPosition.Ecliptic.ArcDegreesFormatted30}
+          retrograde={planet.isRetrograde}
+        />
+
+        {(!unknown || unknown == null) ? (
+          <p className='house'>{planet.House.id}</p>
+        ) : (
+          <p className='house'>-</p>
+        )}
+      </>
+    );
+  } else {
+    return (null);
+  }
+}
+const DisplayHouseData = ({ house }) => {
+  return (
+    <>
+      <p className='house'>{house.label} House</p>
+      <p className='sign'>{house.Sign.label}</p>
+    </>
+  );
+}
+/* End ---- */
 
 /* ---- Birth Chart Display ---- */
 const AstroDisplay = ({ horoscope, unknown }) => {
-  /* <-- Initial Logs -->
+  /* <-- Initial Logs --> */
   console.log(`. . .`);
   console.log(`Birth Chart:`);
   console.log(horoscope);
-  console.log(`. . .`); */
+  console.log(`. . .`);
 
   /* <-- Date Logs --> */
   const origin = horoscope.origin;
 
   /* <-- Planet, Sign, House Logs --> */
   const planets = horoscope._celestialBodies.all;
+  const houses = horoscope._houses;
+  console.log(houses);
   planets.forEach(planet => {
     const signArr = [];
     const houseArr = [];
@@ -95,37 +163,34 @@ const AstroDisplay = ({ horoscope, unknown }) => {
       <article className='birth'>
         <h2>Birth Chart</h2>
         <div>
-          <GetDateTimeLocation
-            year={origin.year} month={origin.month} day={origin.date}
-            hour={origin.hour} minute={origin.minute}
-            latitude={origin.latitude}
-            longitude={origin.longitude}
-          />
-          <GetMethods
+          <DisplayDateTimeLocation
+            origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
+            unknown={unknown}
           />
         </div>
         <div className='chart'>
+          {planets.map((planet) => (
+            <>
+              <DisplayPlanetData
+                planet={planet}
+                unknown={unknown}
+              />
+            </>
+          ))}
+        </div>
+        <div className='houses'>
           {!unknown ? (
-            <>{planets.map((p) => (
-              <>
-                <p className='planet' key={p.label}>{p.label}</p>
-                <p className='sign' key={p.label + p.Sign.label}>{p.Sign.label}</p>
-                <GetDegreesMinutes degreesFormatted={p.ChartPosition.Ecliptic.ArcDegreesFormatted30} />
-                <p className='house' key={p.label + p.House.id}>{p.House.id}</p>
-              </>
-            ))}</>
-          ) : (
-            <>{planets.map((p) => (
-              <>
-                <p className='planet' key={p.label}>{p.label}</p>
-                <p className='sign' key={p.label + p.Sign.label}>{p.Sign.label}</p>
-                <GetDegreesMinutes degreesFormatted={p.ChartPosition.Ecliptic.ArcDegreesFormatted30} />
-                <p className='house' key={p.label + p.House.id}>Approx.</p>
-              </>
-            ))}</>
-          )}
+            <>
+              {houses.map((house) => (
+                <>
+                  <DisplayHouseData house={house} />
+                </>
+              ))
+              }
+            </>
+          ) : (null)}
         </div>
       </article>
     </>
@@ -134,15 +199,17 @@ const AstroDisplay = ({ horoscope, unknown }) => {
 
 /* ---- Moment Chart Display ---- */
 const ChartOfTheMoment = ({ horoscope }) => {
-  /* <-- Initial Logs -->
-  console.log(`Chart of the Moment:`);
+  /* <-- Initial Logs --> */
+  console.log(`. . .`);
+  console.log(`Moment Chart:`);
   console.log(horoscope);
-  console.log(horoscope.origin);
-  console.log(`. . .`); */
+  console.log(`. . .`);
 
-  // /* <-- Variable Declarations --> */
+  /* <-- Variable Declarations --> */
   const origin = horoscope.origin;
   const planets = horoscope._celestialBodies.all;
+  const houses = horoscope._houses;
+  console.log(houses);
 
   /* <-- Return UI --> */
   return (
@@ -150,26 +217,26 @@ const ChartOfTheMoment = ({ horoscope }) => {
       <article className='moment'>
         <h2>Chart of The Moment</h2>
         <div>
-          <GetDateTimeLocation
-            year={origin.year} month={origin.month} day={origin.date}
-            hour={origin.hour} minute={origin.minute}
-            latitude={origin.latitude}
-            longitude={origin.longitude}
-          />
-          <GetMethods
+          <DisplayDateTimeLocation
+            origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
           />
         </div>
         <div className='chart'>
-          <>{planets.map((p) => (
+          {planets.map((planet) => (
             <>
-              <p className='planet' key={p.label}>{p.label}</p>
-              <p className='sign' key={p.label + p.Sign.label}>{p.Sign.label}</p>
-              <GetDegreesMinutes degreesFormatted={p.ChartPosition.Ecliptic.ArcDegreesFormatted30} />
-              <p className='house' key={p.label + p.House.id}>{p.House.id}</p>
+              <DisplayPlanetData planet={planet} />
             </>
-          ))}</>
+          ))}
+        </div>
+        <div className='houses'>
+          {houses.map((house) => (
+            <>
+              <DisplayHouseData house={house} />
+            </>
+          ))
+          }
         </div>
       </article>
     </>
@@ -388,6 +455,18 @@ AstroDisplay.propTypes = {
   horoscope: object,
   unknown: bool,
 }
+DisplayDateTimeLocation.propTypes = {
+  origin: object,
+  zodiac: string,
+  houseSystem: string,
+  unknown: bool,
+}
+DisplayPlanetData.propTypes = {
+  planet: object,
+}
+DisplayHouseData.propTypes = {
+  house: object,
+}
 GetDateTimeLocation.propTypes = {
   year: number,
   month: number,
@@ -396,9 +475,11 @@ GetDateTimeLocation.propTypes = {
   minute: number,
   latitude: number,
   longitude: number,
+  unknown: bool,
 }
-GetDegreesMinutes.propTypes = {
+DisplayDegreesMinutes.propTypes = {
   degreesFormatted: string,
+  retrograde: bool,
 }
 GetMethods.propTypes = {
   zodiac: string,

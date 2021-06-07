@@ -12,6 +12,14 @@
       - ASC / IC / DC / MC
       - Aspects
 
+    - Objects for
+      - Signs
+          = Element, modality, attributes
+      - Angles (ASC, IC, DSC, MC)
+          - Name, attributes
+      - Planets
+          - isLights (only true for sun & moon), isInner, isOuter, signsRuledTrad, signsRuledModern
+
   - Allow users to choose a house system, chart type, & traditional vs modern
       - House Systems: placidus, whole sign, equal house, koch, regiomontanus, topocentric
       - Chart Types: tropical, sidereal
@@ -37,6 +45,10 @@
       - Dominant planets
       - Dominant element
       - Signature sign
+
+
+### Animations | TODO
+  - Scroll to top of screen when user submits birth info
 
 
 ### Astrology Packages Used
