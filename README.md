@@ -14,11 +14,13 @@
 
     - Objects for
       - Signs
-          = Element, modality, attributes
+          = Name, element, masculine/feminine, modality, season, attributes, affirmation, decans
       - Angles (ASC, IC, DSC, MC)
-          - Name, attributes
+          - Name, areas of life
       - Planets
-          - isLights (only true for sun & moon), isInner, isOuter, signsRuledTrad, signsRuledModern
+          - Name, isLights (only true for sun & moon), isInner, isOuter, signsRuledTrad, signsRuledModern, affirmation, areas of life
+      - Houses
+          - Areas of life, quadrant, quadrant info
 
   - Allow users to choose a house system, chart type, & traditional vs modern
       - House Systems: placidus, whole sign, equal house, koch, regiomontanus, topocentric

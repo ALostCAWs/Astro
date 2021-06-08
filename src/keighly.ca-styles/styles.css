@@ -134,14 +134,19 @@ div > article {
 	max-width: 80%;
 	text-align: center;
 }
-div > article h1,
-div > article h2 {
+article > h1,
+article > h2,
+article > h3 {
 	text-transform: uppercase;
 	letter-spacing: 2px;
+}
+article > h3 {
+	margin-top: 3em;
 }
 
 /* ---- Chart Display ---- */
 article > h2,
+article > h3,
 article > div:first-of-type {
 	margin-bottom: 1em;
 }
@@ -166,15 +171,24 @@ article > div > p.unknown {
 }
 
 /* <- CSS Grid -> */
-article > div.chart {
+article > div.chart,
+article > div.houses {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(min(50px, 20%), 6fr)) 1fr;
-	grid-template-rows: repeat(12, 1fr);
+	grid-template-rows: repeat(10, 1fr);
 	justify-content: center;
 	justify-items: left;
+	margin: 0 auto;
+}
+article > div.chart {
+	grid-template-columns: repeat(3, minmax(min(50px, 20%), 6fr)) 1fr;
 }
 article > div.chart > p.house {
 	justify-self: center;
+}
+
+article > div.houses {
+	grid-template-columns: 3fr 1fr;
+	max-width: 80%;
 }
 
 /* ---- Form ---- */

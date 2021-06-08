@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { object, array, bool, string, number } from 'prop-types';
 import { createInstances } from './astro.js';
+import { Signs } from './signs.js';
 import './main.css';
 /* End ---- */
 
@@ -180,6 +181,7 @@ const AstroDisplay = ({ horoscope, unknown }) => {
             </>
           ))}
         </div>
+        <h3>House Placements</h3>
         <div className='houses'>
           {!unknown ? (
             <>
@@ -230,6 +232,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
             </>
           ))}
         </div>
+        <h3>Current Houses</h3>
         <div className='houses'>
           {houses.map((house) => (
             <>
@@ -373,9 +376,9 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   /* <-- Return UI --> */
   return (
     <>
-      <article>
-        {!submit ? (
-          <>
+      {!submit ? (
+        <>
+          <article>
             <h2>Enter Birth Info</h2>
             <form action='' id='birth-data'>
               <div className="date">
@@ -425,11 +428,11 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
               </div>
               <button type='button' id='submit' name='submit' onClick={() => setSubmit(true)}>Calculate Chart</button>
             </form>
-          </>
-        ) : (
-          <CreateHoroscope chartData={birthData} />
-        )}
-      </article>
+          </article>
+        </>
+      ) : (
+        <CreateHoroscope chartData={birthData} />
+      )}
       <CreateHoroscope chartData={MOMENTDATA} />
     </>
   );
