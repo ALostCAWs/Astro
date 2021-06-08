@@ -71,7 +71,7 @@ let decans = [
   { traditionalRuler: 'Sun', sign: 'Leo', degStart: 10 },
   { traditionalRuler: 'Jupiter', sign: 'Sagittarius', degStart: 20 },
 ];
-const Aries = new Sign(1, 'Aries', 'Fire', 'Masculine', 'Cardinal', 'Spring', 'Mars', '', bodyRulers, attributes, decans);
+const Aries = new Sign(1, 'Aries', 'I am', 'Fire', 'Masculine', 'Cardinal', 'Spring', 'Mars', '', bodyRulers, attributes, decans);
 Signs.push(Aries);
 
 /* <- Taurus -> */
@@ -82,7 +82,7 @@ decans = [
   { traditionalRuler: 'Mercury', sign: 'Virgo', degStart: 10 },
   { traditionalRuler: 'Saturn', sign: 'Capricorn', degStart: 20 },
 ];
-const Taurus = new Sign(2, 'Taurus', 'Earth', 'Feminine', 'Fixed', 'Spring', 'Venus', '', bodyRulers, attributes, decans);
+const Taurus = new Sign(2, 'Taurus', 'I have', 'Earth', 'Feminine', 'Fixed', 'Spring', 'Venus', '', bodyRulers, attributes, decans);
 Signs.push(Taurus);
 
 /* <- Gemini -> */
@@ -93,7 +93,7 @@ decans = [
   { traditionalRuler: 'Venus', sign: 'Libra', degStart: 10 },
   { traditionalRuler: 'Saturn', modernRuler: 'Uranus', sign: 'Aquarius', degStart: 20 },
 ];
-const Gemini = new Sign(3, 'Gemini', 'Air', 'Masculine', 'Mutable', 'Spring', 'Mercury', '', bodyRulers, attributes, decans);
+const Gemini = new Sign(3, 'Gemini', 'I think', 'Air', 'Masculine', 'Mutable', 'Spring', 'Mercury', '', bodyRulers, attributes, decans);
 Signs.push(Gemini);
 
 /* <- Cancer -> */
@@ -104,7 +104,7 @@ decans = [
   { traditionalRuler: 'Mars', modernRuler: 'Pluto', sign: 'Scorpio', degStart: 10 },
   { traditionalRuler: 'Jupiter', modernRuler: 'Neptune', sign: 'Pisces', degStart: 20 },
 ];
-const Cancer = new Sign(4, 'Cancer', 'Water', 'Feminine', 'Cardinal', 'Summer', 'Moon', '', bodyRulers, attributes, decans);
+const Cancer = new Sign(4, 'Cancer', 'I feel', 'Water', 'Feminine', 'Cardinal', 'Summer', 'Moon', '', bodyRulers, attributes, decans);
 Signs.push(Cancer);
 
 /* <- Leo -> */
@@ -115,7 +115,7 @@ decans = [
   { traditionalRuler: 'Jupiter', sign: 'Sagittarius', degStart: 10 },
   { traditionalRuler: 'Mars', sign: 'Aries', degStart: 20 },
 ];
-const Leo = new Sign(5, 'Leo', 'Fire', 'Masculine', 'Fixed', 'Summer', 'Sun', '', bodyRulers, attributes, decans);
+const Leo = new Sign(5, 'Leo', 'I will', 'Fire', 'Masculine', 'Fixed', 'Summer', 'Sun', '', bodyRulers, attributes, decans);
 Signs.push(Leo);
 
 /* <- Virgo -> */
@@ -126,7 +126,7 @@ decans = [
   { traditionalRuler: 'Saturn', sign: 'Capricorn', degStart: 10 },
   { traditionalRuler: 'Venus', sign: 'Taurus', degStart: 20 },
 ];
-const Virgo = new Sign(6, 'Virgo', 'Earth', 'Feminine', 'Mutable', 'Summer', 'Mercury', '', bodyRulers, attributes, decans);
+const Virgo = new Sign(6, 'Virgo', 'I analyze', 'Earth', 'Feminine', 'Mutable', 'Summer', 'Mercury', '', bodyRulers, attributes, decans);
 Signs.push(Virgo);
 
 /* <- Libra -> */
@@ -137,7 +137,7 @@ decans = [
   { traditionalRuler: 'Saturn', modernRuler: 'Uranus', sign: 'Aquarius', degStart: 10 },
   { traditionalRuler: 'Mercury', sign: 'Gemini', degStart: 20 },
 ];
-const Libra = new Sign(7, 'Libra', 'Air', 'Masculine', 'Cardinal', 'Fall', 'Venus', '', bodyRulers, attributes, decans);
+const Libra = new Sign(7, 'Libra', 'I balance', 'Air', 'Masculine', 'Cardinal', 'Fall', 'Venus', '', bodyRulers, attributes, decans);
 Signs.push(Libra);
 
 /* <- Scorpio -> */
@@ -148,7 +148,7 @@ decans = [
   { traditionalRuler: 'Jupiter', modernRuler: 'Neptune', sign: 'Pisces', degStart: 10 },
   { traditionalRuler: 'Moon', sign: 'Cancer', degStart: 20 },
 ];
-const Scorpio = new Sign(8, 'Scorpio', 'Water', 'Feminine', 'Fixed', 'Fall', 'Mars', 'Pluto', bodyRulers, attributes, decans);
+const Scorpio = new Sign(8, 'Scorpio', 'I desire', 'Water', 'Feminine', 'Fixed', 'Fall', 'Mars', 'Pluto', bodyRulers, attributes, decans);
 Signs.push(Scorpio);
 
 /* <- Sagittarius -> */
@@ -159,7 +159,7 @@ decans = [
   { traditionalRuler: 'Mars', sign: 'Aries', degStart: 10 },
   { traditionalRuler: 'Sun', sign: 'Leo', degStart: 20 },
 ];
-const Sagittarius = new Sign(9, 'Sagittarius', 'Fire', 'Masculine', 'Mutable', 'Fall', 'Jupiter', '', bodyRulers, attributes, decans);
+const Sagittarius = new Sign(9, 'Sagittarius', 'I understand', 'Fire', 'Masculine', 'Mutable', 'Fall', 'Jupiter', '', bodyRulers, attributes, decans);
 Signs.push(Sagittarius);
 
 /* <- Capricorn -> */
@@ -170,7 +170,7 @@ decans = [
   { traditionalRuler: 'Venus', sign: 'Taurus', degStart: 10 },
   { traditionalRuler: 'Mercury', sign: 'Virgo', degStart: 20 },
 ];
-const Capricorn = new Sign(10, 'Capricorn', 'Earth', 'Feminine', 'Cardinal', 'Winter', 'Saturn', '', bodyRulers, attributes, decans);
+const Capricorn = new Sign(10, 'Capricorn', 'I use', 'Earth', 'Feminine', 'Cardinal', 'Winter', 'Saturn', '', bodyRulers, attributes, decans);
 Signs.push(Capricorn);
 
 /* <- Aquarius -> */
@@ -181,7 +181,7 @@ decans = [
   { traditionalRuler: 'Mercury', sign: 'Gemini', degStart: 10 },
   { traditionalRuler: 'Venus', sign: 'Libra', degStart: 20 },
 ];
-const Aquarius = new Sign(11, 'Aquarius', 'Air', 'Masculine', 'Fixed', 'Winter', 'Saturn', 'Uranus', bodyRulers, attributes, decans);
+const Aquarius = new Sign(11, 'Aquarius', 'I know', 'Air', 'Masculine', 'Fixed', 'Winter', 'Saturn', 'Uranus', bodyRulers, attributes, decans);
 Signs.push(Aquarius);
 
 /* <- Pisces -> */
@@ -192,5 +192,5 @@ decans = [
   { traditionalRuler: 'Moon', sign: 'Cancer', degStart: 10 },
   { traditionalRuler: 'Mars', modernRuler: 'Pluto', sign: 'Scorpio', degStart: 20 },
 ];
-const Pisces = new Sign(12, 'Pisces', 'Water', 'Feminine', 'Mutable', 'Winter', 'Jupiter', 'Neptune', bodyRulers, attributes, decans);
+const Pisces = new Sign(12, 'Pisces', 'I believe', 'Water', 'Feminine', 'Mutable', 'Winter', 'Jupiter', 'Neptune', bodyRulers, attributes, decans);
 Signs.push(Pisces);
