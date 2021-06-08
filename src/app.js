@@ -178,8 +178,8 @@ const DisplayStellia = ({ stellia }) => {
         <>
           {stellia.map((stellium) => (
             <>
-              <p className='stellia-label'>{stellium.label}</p>
-              <p className='stellia-occurrences'>{stellium.occurrences}</p>
+              <p className='label'>{stellium.label}</p>
+              <p className='occurrences'>{stellium.occurrences}</p>
             </>
           ))}
         </>
