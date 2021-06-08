@@ -128,10 +128,8 @@ const DisplayHouseData = ({ house }) => {
 /* ---- Birth Chart Display ---- */
 const AstroDisplay = ({ horoscope, unknown }) => {
   /* <-- Initial Logs --> */
-  console.log(`. . .`);
-  console.log(`Birth Chart:`);
+  console.log(`%cBirth Chart`, 'border: 1px solid white; padding: 10px ;');
   console.log(horoscope);
-  console.log(`. . .`);
 
   /* <-- Date Logs --> */
   const origin = horoscope.origin;
@@ -202,15 +200,14 @@ const AstroDisplay = ({ horoscope, unknown }) => {
 /* ---- Moment Chart Display ---- */
 const ChartOfTheMoment = ({ horoscope }) => {
   /* <-- Initial Logs --> */
-  console.log(`. . .`);
-  console.log(`Moment Chart:`);
+  console.log(`%cMoment Chart`, 'border: 1px solid white; padding: 10px ;');
   console.log(horoscope);
-  console.log(`. . .`);
 
   /* <-- Variable Declarations --> */
   const origin = horoscope.origin;
   const planets = horoscope._celestialBodies.all;
   const houses = horoscope._houses;
+  console.log(`%cHouses`, 'border: 1px solid white; padding: 10px ;');
   console.log(houses);
 
   /* <-- Return UI --> */
