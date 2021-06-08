@@ -28,6 +28,51 @@ const Nav = () => {
 }
 
 /* ---- Get Data for Display Components Section */
+const CalculateStellia = ({ placementArr, placementSet }) => {
+  const stellia = [];
+  placementSet.forEach(sign => {
+    let occurrences = placementArr.reduce(function (n, p) {
+      return n + (p === sign);
+    }, 0);
+    if (occurrences >= 3) {
+      stellia.push(
+        { label: sign, occurrences: occurrences },
+      );
+    }
+  });
+
+  /* <-- Return UI --> */
+  return (
+    <DisplayStellia stellia={stellia} />
+  );
+}
+const GetSignHouseSets = ({ planets, unknown }) => {
+  /* <-- Variable Declarations --> */
+  const placementArr = [];
+  const placementSet = new Set();
+
+  /* Add signs & houses w/ planets in them to arrays / sets */
+  planets.forEach(planet => {
+    /* <-- Variable Declarations --> */
+    const sign = planet.Sign.label;
+    const house = planet.House.label;
+
+    /* Avoid adding data from non-planets to the arrays / sets */
+    if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
+      placementArr.push(sign);
+      placementSet.add(sign);
+      if (!unknown || unknown == null) {
+        placementArr.push(house);
+        placementSet.add(house);
+      }
+    }
+  });
+
+  /* <-- Return Component Call --> */
+  return (
+    <CalculateStellia placementArr={placementArr} placementSet={placementSet} />
+  );
+}
 const GetMethods = ({ zodiac, houseSystem }) => {
   const method = zodiac.charAt(0).toUpperCase() + zodiac.slice(1);
   const system = houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);
@@ -42,7 +87,7 @@ const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitu
   const EW = (longitude >= 0) ? `E` : `W`;
   const NS = (latitude >= 0) ? `N` : `S`;
 
-  // Avoid display & calculations related to birth time if it's unknown
+  /* Avoid display & calculations related to birth time if it's unknown */
   if (!unknown || unknown == null) {
     let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
     time = (hour < 12) ? time += `AM` : time += `PM`;
@@ -67,7 +112,7 @@ const DisplayDegreesMinutes = ({ degreesFormatted, retrograde }) => {
     </>
   );
 }
-const DisplayDateTimeLocation = ({ origin, zodiac, houseSystem, unknown }) => {
+const DisplayDateTimeLocationMethods = ({ origin, zodiac, houseSystem, unknown }) => {
   return (
     <>
       <GetDateTimeLocation
@@ -123,6 +168,27 @@ const DisplayHouseData = ({ house }) => {
     </>
   );
 }
+const DisplayStellia = ({ stellia }) => {
+  console.log(stellia);
+  /* <-- Return UI --> */
+  /* Avoid displaying empty stellia grids */
+  return (
+    <>
+      {stellia.length != 0 ? (
+        <>
+          {stellia.map((stellium) => (
+            <>
+              <p className='stellia-label'>{stellium.label}</p>
+              <p className='stellia-occurrences'>{stellium.occurrences}</p>
+            </>
+          ))}
+        </>
+      ) : (
+        <p className='no-stellia'>No stellia found in the given chart</p>
+      )}
+    </>
+  );
+}
 /* End ---- */
 
 /* ---- Birth Chart Display ---- */
@@ -137,32 +203,15 @@ const AstroDisplay = ({ horoscope, unknown }) => {
   /* <-- Planet, Sign, House Logs --> */
   const planets = horoscope._celestialBodies.all;
   const houses = horoscope._houses;
+  console.log(`%cHouses`, 'border: 1px solid white; padding: 10px ;');
   console.log(houses);
-  planets.forEach(planet => {
-    const signArr = [];
-    const houseArr = [];
-    const signSet = new Set();
-    const houseSet = new Set();
-    const name = planet.key;
-    const sign = planet.Sign.key;
-    const house = planet.House.id;
-    const degrees = planet.ChartPosition.Ecliptic.ArcDegreesFormatted30;
-    const output = planet.isRetrograde ? `${degrees}r` : `${degrees}`;
-
-    if (name !== 'sirius' && name !== 'chiron') {
-      signArr.push(sign);
-      houseArr.push(house);
-      signSet.add(sign);
-      houseSet.add(house);
-    }
-  });
 
   return (
     <>
       <article className='birth'>
         <h2>Birth Chart</h2>
         <div>
-          <DisplayDateTimeLocation
+          <DisplayDateTimeLocationMethods
             origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
@@ -192,6 +241,10 @@ const AstroDisplay = ({ horoscope, unknown }) => {
             </>
           ) : (null)}
         </div>
+        <h3>Stellia</h3>
+        <div className='stellia'>
+          <GetSignHouseSets planets={planets} unknown={unknown} />
+        </div>
       </article>
     </>
   );
@@ -216,7 +269,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
       <article className='moment'>
         <h2>Chart of The Moment</h2>
         <div>
-          <DisplayDateTimeLocation
+          <DisplayDateTimeLocationMethods
             origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
@@ -237,6 +290,10 @@ const ChartOfTheMoment = ({ horoscope }) => {
             </>
           ))
           }
+        </div>
+        <h3>Current Stellia</h3>
+        <div className='stellia'>
+          <GetSignHouseSets planets={planets} />
         </div>
       </article>
     </>
@@ -455,7 +512,7 @@ AstroDisplay.propTypes = {
   horoscope: object,
   unknown: bool,
 }
-DisplayDateTimeLocation.propTypes = {
+DisplayDateTimeLocationMethods.propTypes = {
   origin: object,
   zodiac: string,
   houseSystem: string,
@@ -485,6 +542,17 @@ GetMethods.propTypes = {
   zodiac: string,
   houseSystem: string,
 }
+GetSignHouseSets.propTypes = {
+  planets: array,
+  unknown: bool,
+}
+CalculateStellia.propTypes = {
+  placementArr: array,
+  placementSet: array,
+}
+DisplayStellia.propTypes = {
+  stellia: array,
+}
 
 /* <- Defaults -> */
 const moment = new Date();
@@ -503,10 +571,10 @@ const MOMENTDATA = {
 }
 const BIRTHDATA = {
   type: 'birth',
-  year: 1998,
-  month: 2,
-  day: 29,
-  hour: 9,
+  year: 2000,
+  month: 8,
+  day: 26,
+  hour: 16,
   unknown: false,
   minute: 10,
   latitude: 43.14,
@@ -570,7 +638,6 @@ function App() {
         zodiacs={ZODIACS}
         houseSystems={HOUSESYSTEMS}
       />
-
     </>
   );
 }
