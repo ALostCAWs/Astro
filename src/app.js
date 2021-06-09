@@ -26,7 +26,25 @@ import {
 import './main.css';
 /* End ---- */
 
-/* ---- Birth Chart Display ---- */
+/* ---- Birth Chart Display ----
+  <-- Props
+    horoscope
+      - Instance of the Horoscope object
+      - Contains all info needed to display the Moment Chart to the user
+    unknown
+      - true  - birth time is not given
+      - false - birth time is given
+  ----
+  Receives horoscope from CreateHoroscope
+  Calls components to display the data w/in horoscope to the user
+  ----
+  Component Calls
+    GetDateTimeLocationMethods  -> DisplayDateTimeLocation
+                                -> DisplayMethods
+    DisplayPlanetData -> DisplayDegreesMinutes
+    (if !unknown) DisplayHouseData
+    GetSignHouseSets  -> CalculateStellia -> DisplayStellia
+*/
 const BirthChart = ({ horoscope, unknown }) => {
   /* <-- Initial Logs --> */
   console.log(`%cBirth Chart`, 'border: 1px solid white; padding: 10px ;');
@@ -85,7 +103,22 @@ const BirthChart = ({ horoscope, unknown }) => {
   );
 }
 
-/* ---- Moment Chart Display ---- */
+/* ---- Moment Chart Display ----
+  <-- Props
+    horoscope
+      - Instance of the Horoscope object
+      - Contains all info needed to display the Moment Chart to the user
+  ----
+  Receives horoscope from CreateHoroscope
+  Calls components to display the data w/in horoscope to the user
+  ----
+  Component Calls
+    GetDateTimeLocationMethods  -> DisplayDateTimeLocation
+                                -> DisplayMethods
+    DisplayPlanetData -> DisplayDegreesMinutes
+    DisplayHouseData
+    GetSignHouseSets  -> CalculateStellia -> DisplayStellia
+*/
 const ChartOfTheMoment = ({ horoscope }) => {
   /* <-- Initial Logs --> */
   console.log(`%cMoment Chart`, 'border: 1px solid white; padding: 10px ;');
@@ -134,7 +167,15 @@ const ChartOfTheMoment = ({ horoscope }) => {
   );
 }
 
-/* ---- Chart Creation ---- */
+/* ---- Chart Creation ----
+  <-- Props
+    chartData
+      - MOMENTDATA or BIRTHDATA object
+  ----
+  Receives chartData from AstroChart
+  Creates a new instance of the Horoscope object
+  Calls ChartOfTheMoment or BirthChart
+*/
 const CreateHoroscope = ({ chartData }) => {
   /* <-- Horoscope --> */
   const horoscope = createInstances(
@@ -164,7 +205,47 @@ const CreateHoroscope = ({ chartData }) => {
   );
 }
 
-/* ---- Form Display ---- */
+/* ---- Form Display ----
+  <-- Props
+    birthData
+      - Updates key:value pairs in the BIRTHDATA object
+    months, days, hours, minutes, zodiacs, houseSystems
+      - Uses the data in their corresponding objects to populate the forms' select list dropdowns
+  ----
+  <-- Hooks (useState, useEffect)
+    formValues
+      - Holds default data shown on the forms' page load
+    unknown
+      - Tracks state of the unknown birth time checkbox
+      - useEffect
+          - watches for changes
+          - updates birthData & formValues when toggled
+              - true  - birthData: unknown=true, hour/minute=0
+                      - formValues: hour/minute=0
+              - false - birthData: unknown=false
+    useLocation
+      - Tracks whether the useLocation feature is true or false
+      - useEffect
+          - watches for changes
+          - updates MOMENTDATA & formValues when toggled
+              - true  - uses navigator to get the currentPositions' lat/lon coords & rounds them to .00
+                      - MOMENTDATA & formValues: latitude/longitude = lat/lon
+              - false - MOMENTDATA & formValues: latitude/longitude = 0.00/0.00
+    submit
+      - Tracks when user submits the form
+      - Calls CreateHoroscope component
+  ----
+  <-- Functions
+    handleChange
+      - Updates formValues & birthData on every change
+      - Updates MOMENTDATA on changes to zodiac & houseSystem
+  ----
+  Calls CreateHoroscope (Moment Chart)
+  Uses objects to fill out select list dropdowns
+  Collects user inputs
+  Updates values in objects when appropriate, depending on the inputs/changes that were made
+  Calls CreateHoroscope (Birth Chart) when submitted
+*/
 const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSystems }) => {
   /* ---- Hooks ---- */
   /* <- State -> */
@@ -184,14 +265,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   const [submit, setSubmit] = useState(false);
 
   /* <- Effect -> */
-  // formValues
-  useEffect(() => {
-    // console.log(formValues);
-    // for (const [key, value] of Object.entries(birthData)) {
-    //   console.log(`${key}: ${value}`);
-    // }
-  }, [formValues])
-
   // unknown
   useEffect(() => {
     if (unknown) {
