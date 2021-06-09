@@ -1,198 +1,33 @@
-/* ---- ESLint Disablers ---- */
-/* eslint-disable no-unused-vars */
-
 /* ---- Imports Section */
 import React, { useState, useEffect } from 'react';
-import { object, array, bool, string, number } from 'prop-types';
-import { createInstances } from './astro.js';
+import { object, array, bool } from 'prop-types';
+// eslint-disable-next-line no-unused-vars
 import { Signs } from './signs.js';
+import { createInstances } from './astro.js';
+import { Nav } from './nav.js';
+import {
+  MOMENTDATA,
+  BIRTHDATA,
+  MONTHS,
+  DAYS,
+  HOURS,
+  MINUTES,
+  ZODIACS,
+  HOUSESYSTEMS,
+} from './defaultData.js';
+import {
+  GetDateTimeLocationMethods,
+  GetSignHouseSets,
+} from './getData.js';
+import {
+  DisplayPlanetData,
+  DisplayHouseData,
+} from './displayData';
 import './main.css';
 /* End ---- */
 
-/* ---- Navigation UI ---- */
-const Nav = () => {
-  // Return UI
-  return (
-    <nav>
-      <a href="https://keighly.ca">
-        <h1>Keighly.ca</h1>
-      </a>
-      <ul>
-        <li><a href="https://github.com/ALostCAWs"
-          target="_blank"
-          rel="noopener noreferrer">GitHub</a></li>
-        <li><a href="https://keighly.ca">Gallery</a></li>
-      </ul>
-    </nav>
-  );
-}
-
-/* ---- Get Data for Display Components Section */
-const CalculateStellia = ({ placementArr, placementSet }) => {
-  const stellia = [];
-  placementSet.forEach(sign => {
-    let occurrences = placementArr.reduce(function (n, p) {
-      return n + (p === sign);
-    }, 0);
-    if (occurrences >= 3) {
-      stellia.push(
-        { label: sign, occurrences: occurrences },
-      );
-    }
-  });
-
-  /* <-- Return UI --> */
-  return (
-    <DisplayStellia stellia={stellia} />
-  );
-}
-const GetSignHouseSets = ({ planets, unknown }) => {
-  /* <-- Variable Declarations --> */
-  const placementArr = [];
-  const placementSet = new Set();
-
-  /* Add signs & houses w/ planets in them to arrays / sets */
-  planets.forEach(planet => {
-    /* <-- Variable Declarations --> */
-    const sign = planet.Sign.label;
-    const house = planet.House.label;
-
-    /* Avoid adding data from non-planets to the arrays / sets */
-    if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
-      placementArr.push(sign);
-      placementSet.add(sign);
-      if (!unknown || unknown == null) {
-        placementArr.push(house);
-        placementSet.add(house);
-      }
-    }
-  });
-
-  /* <-- Return Component Call --> */
-  return (
-    <CalculateStellia placementArr={placementArr} placementSet={placementSet} />
-  );
-}
-const GetMethods = ({ zodiac, houseSystem }) => {
-  const method = zodiac.charAt(0).toUpperCase() + zodiac.slice(1);
-  const system = houseSystem.charAt(0).toUpperCase() + houseSystem.slice(1);
-  return (
-    <p>Methods: {method} & {system}</p>
-  );
-}
-const GetDateTimeLocation = ({ year, month, day, hour, minute, latitude, longitude, unknown }) => {
-  const dd = (day < 10) ? `0${day}` : `${day}`;
-  const mm = ((month + 1) < 10) ? `0${month + 1}` : `${month + 1}`;
-  const date = `${dd}-${mm}-${year}`;
-  const EW = (longitude >= 0) ? `E` : `W`;
-  const NS = (latitude >= 0) ? `N` : `S`;
-
-  /* Avoid display & calculations related to birth time if it's unknown */
-  if (!unknown || unknown == null) {
-    let time = (hour < 10) ? `0${hour}:${minute}` : `${hour}:${minute}`;
-    time = (hour < 12) ? time += `AM` : time += `PM`;
-    return (<p>{date}, {time} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>);
-  } else {
-    return (<p>{date} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>);
-  }
-}
-/* End ---- */
-
-/* ---- Display Components */
-const DisplayDegreesMinutes = ({ degreesFormatted, retrograde }) => {
-  const deg = degreesFormatted.slice(0, 4).trim();
-  const minSec = degreesFormatted.slice(deg.length + 1, degreesFormatted.length).trim();
-  return (
-    <>
-      {(retrograde) ? (
-        <p className='degrees'>{deg} {minSec} R</p>
-      ) : (
-        <p className='degrees'>{deg} {minSec}</p>
-      )}
-    </>
-  );
-}
-const DisplayDateTimeLocationMethods = ({ origin, zodiac, houseSystem, unknown }) => {
-  return (
-    <>
-      <GetDateTimeLocation
-        year={origin.year} month={origin.month} day={origin.date}
-        hour={origin.hour} minute={origin.minute}
-        latitude={origin.latitude} longitude={origin.longitude}
-        unknown={unknown}
-      />
-      <GetMethods
-        zodiac={zodiac}
-        houseSystem={houseSystem}
-      />
-      {(unknown && unknown != null) ? (
-        <>
-          <p className='unknown'>* Houses cannot be calculated due to unknown birth time</p>
-          <p className='unknown'>* Degrees & Minutes / Seconds are approx. due to unknown birth time</p>
-        </>
-      ) : (
-        null
-      )}
-    </>
-  );
-}
-const DisplayPlanetData = ({ planet, unknown }) => {
-  /* Skip over non-planets that appear in the array */
-  /* Avoid display of houses when birth time is unknown */
-  if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
-    return (
-      <>
-        <p className='planet'>{planet.label}</p>
-        <p className='sign'>{planet.Sign.label}</p>
-        <DisplayDegreesMinutes
-          degreesFormatted={planet.ChartPosition.Ecliptic.ArcDegreesFormatted30}
-          retrograde={planet.isRetrograde}
-        />
-
-        {(!unknown || unknown == null) ? (
-          <p className='house'>{planet.House.id}</p>
-        ) : (
-          <p className='house'>-</p>
-        )}
-      </>
-    );
-  } else {
-    return (null);
-  }
-}
-const DisplayHouseData = ({ house }) => {
-  return (
-    <>
-      <p className='house'>{house.label} House</p>
-      <p className='sign'>{house.Sign.label}</p>
-    </>
-  );
-}
-const DisplayStellia = ({ stellia }) => {
-  console.log(stellia);
-  /* <-- Return UI --> */
-  /* Avoid displaying empty stellia grids */
-  return (
-    <>
-      {stellia.length != 0 ? (
-        <>
-          {stellia.map((stellium) => (
-            <>
-              <p className='label'>{stellium.label}</p>
-              <p className='occurrences'>{stellium.occurrences}</p>
-            </>
-          ))}
-        </>
-      ) : (
-        <p className='no-stellia'>No stellia found in the given chart</p>
-      )}
-    </>
-  );
-}
-/* End ---- */
-
 /* ---- Birth Chart Display ---- */
-const AstroDisplay = ({ horoscope, unknown }) => {
+const BirthChart = ({ horoscope, unknown }) => {
   /* <-- Initial Logs --> */
   console.log(`%cBirth Chart`, 'border: 1px solid white; padding: 10px ;');
   console.log(horoscope);
@@ -211,7 +46,7 @@ const AstroDisplay = ({ horoscope, unknown }) => {
       <article className='birth'>
         <h2>Birth Chart</h2>
         <div>
-          <DisplayDateTimeLocationMethods
+          <GetDateTimeLocationMethods
             origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
@@ -269,7 +104,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
       <article className='moment'>
         <h2>Chart of The Moment</h2>
         <div>
-          <DisplayDateTimeLocationMethods
+          <GetDateTimeLocationMethods
             origin={origin}
             zodiac={horoscope._zodiac}
             houseSystem={horoscope._houseSystem}
@@ -288,8 +123,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
             <>
               <DisplayHouseData house={house} />
             </>
-          ))
-          }
+          ))}
         </div>
         <h3>Current Stellia</h3>
         <div className='stellia'>
@@ -300,6 +134,7 @@ const ChartOfTheMoment = ({ horoscope }) => {
   );
 }
 
+/* ---- Chart Creation ---- */
 const CreateHoroscope = ({ chartData }) => {
   /* <-- Horoscope --> */
   const horoscope = createInstances(
@@ -320,7 +155,7 @@ const CreateHoroscope = ({ chartData }) => {
       {chartData.type === 'moment' ? (
         <ChartOfTheMoment horoscope={horoscope} />
       ) : (
-        <AstroDisplay
+        <BirthChart
           horoscope={horoscope}
           unknown={chartData.unknown}
         />
@@ -329,6 +164,7 @@ const CreateHoroscope = ({ chartData }) => {
   );
 }
 
+/* ---- Form Display ---- */
 const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSystems }) => {
   /* ---- Hooks ---- */
   /* <- State -> */
@@ -394,7 +230,7 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
         });
       }
       // Error
-      const errorFunction = (position) => {
+      const errorFunction = () => {
         alert('Error in retrieving current location.');
       }
       // Get location
@@ -492,138 +328,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   );
 }
 
-/* <- PropTypes -> */
-ChartOfTheMoment.propTypes = {
-  horoscope: object
-}
-AstroForm.propTypes = {
-  birthData: object,
-  months: array,
-  days: array,
-  hours: array,
-  minutes: array,
-  zodiacs: array,
-  houseSystems: array,
-}
-CreateHoroscope.propTypes = {
-  chartData: object,
-}
-AstroDisplay.propTypes = {
-  horoscope: object,
-  unknown: bool,
-}
-DisplayDateTimeLocationMethods.propTypes = {
-  origin: object,
-  zodiac: string,
-  houseSystem: string,
-  unknown: bool,
-}
-DisplayPlanetData.propTypes = {
-  planet: object,
-}
-DisplayHouseData.propTypes = {
-  house: object,
-}
-GetDateTimeLocation.propTypes = {
-  year: number,
-  month: number,
-  day: number,
-  hour: number,
-  minute: number,
-  latitude: number,
-  longitude: number,
-  unknown: bool,
-}
-DisplayDegreesMinutes.propTypes = {
-  degreesFormatted: string,
-  retrograde: bool,
-}
-GetMethods.propTypes = {
-  zodiac: string,
-  houseSystem: string,
-}
-GetSignHouseSets.propTypes = {
-  planets: array,
-  unknown: bool,
-}
-CalculateStellia.propTypes = {
-  placementArr: array,
-  placementSet: array,
-}
-DisplayStellia.propTypes = {
-  stellia: array,
-}
-
-/* <- Defaults -> */
-const moment = new Date();
-const MOMENTDATA = {
-  type: 'moment',
-  year: moment.getFullYear(),
-  month: moment.getMonth(),
-  day: moment.getDate(),
-  hour: moment.getHours(),
-  minute: moment.getMinutes(),
-  unknown: false,
-  latitude: 43.14,
-  longitude: -80.25,
-  zodiac: 'tropical',
-  houseSystem: 'placidus',
-}
-const BIRTHDATA = {
-  type: 'birth',
-  year: 2000,
-  month: 8,
-  day: 26,
-  hour: 16,
-  unknown: false,
-  minute: 10,
-  latitude: 43.14,
-  longitude: -80.25,
-  zodiac: 'tropical',
-  houseSystem: 'placidus',
-};
-/* <-- Populate Select Lists --> */
-const MONTHS = [
-  { label: 'January', value: 0 },
-  { label: 'February', value: 1 },
-  { label: 'March', value: 2 },
-  { label: 'April', value: 3 },
-  { label: 'May', value: 4 },
-  { label: 'June', value: 5 },
-  { label: 'July', value: 6 },
-  { label: 'August', value: 7 },
-  { label: 'September', value: 8 },
-  { label: 'October', value: 9 },
-  { label: 'November', value: 10 },
-  { label: 'December', value: 11 },
-];
-const DAYS = [];
-for (let i = 1; i < 32; i++) {
-  DAYS.push(i);
-}
-const HOURS = [];
-for (let i = 0; i < 24; i++) {
-  const label = (i < 12) ? 'AM' : 'PM';
-  const entry = { label: `${i} ${label}`, value: i };
-  HOURS.push(entry);
-}
-const MINUTES = [];
-for (let i = 0; i < 60; i++) {
-  MINUTES.push(i);
-}
-const ZODIACS = [
-  { label: 'Tropical', value: 'tropical' },
-  { label: 'Sidereal', value: 'sidereal' },
-];
-const HOUSESYSTEMS = [
-  { label: 'Placidus', value: 'placidus' },
-  { label: 'Whole Sign', value: 'whole-sign' },
-  { label: 'Equal House', value: 'equal-house' },
-  { label: 'Koch', value: 'koch' },
-  { label: 'Regiomontanus', value: 'regiomontanus' },
-  { label: 'Topocentric', value: 'topocentric' },
-];
-
 /* <- App() -> */
 function App() {
   return (
@@ -642,3 +346,24 @@ function App() {
   );
 }
 export default App;
+
+/* <- PropTypes -> */
+AstroForm.propTypes = {
+  birthData: object,
+  months: array,
+  days: array,
+  hours: array,
+  minutes: array,
+  zodiacs: array,
+  houseSystems: array,
+}
+CreateHoroscope.propTypes = {
+  chartData: object,
+}
+ChartOfTheMoment.propTypes = {
+  horoscope: object
+}
+BirthChart.propTypes = {
+  horoscope: object,
+  unknown: bool,
+}
