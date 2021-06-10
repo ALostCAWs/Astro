@@ -22,6 +22,7 @@ import {
 import {
   DisplayPlanetData,
   DisplayHouseData,
+  DisplayRetrogrades,
 } from './displayData';
 import './main.css';
 /* End ---- */
@@ -98,6 +99,14 @@ const BirthChart = ({ horoscope, unknown }) => {
         <div className='stellia'>
           <GetSignHouseSets planets={planets} unknown={unknown} />
         </div>
+        <h3>Retrogrades</h3>
+        <div className='retrogrades'>
+          {planets.map((planet) => (
+            <>
+              <DisplayRetrogrades planet={planet} />
+            </>
+          ))}
+        </div>
       </article>
     </>
   );
@@ -162,6 +171,14 @@ const ChartOfTheMoment = ({ horoscope }) => {
         <div className='stellia'>
           <GetSignHouseSets planets={planets} />
         </div>
+        <h3>Current Retrogrades</h3>
+        <div className='retrogrades'>
+          {planets.map((planet) => (
+            <>
+              <DisplayRetrogrades planet={planet} />
+            </>
+          ))}
+        </div>
       </article>
     </>
   );
@@ -215,6 +232,10 @@ const CreateHoroscope = ({ chartData }) => {
   <-- Hooks (useState, useEffect)
     formValues
       - Holds default data shown on the forms' page load
+      - useEffect
+          - populates birthData w/ defaults on page load
+          - watches for changes
+          - updates birthData when any changes are made
     unknown
       - Tracks state of the unknown birth time checkbox
       - useEffect
@@ -255,8 +276,8 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
     day: 29,
     hour: 9,
     minute: 10,
-    latitude: 43.14,
-    longitude: -80.25,
+    latitude: 0,
+    longitude: 0,
     zodiac: 'tropical',
     houseSystem: 'placidus',
   });
@@ -265,6 +286,15 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   const [submit, setSubmit] = useState(false);
 
   /* <- Effect -> */
+  // formValues
+  useEffect(() => {
+    for (let property in formValues) {
+      if (Object.prototype.hasOwnProperty.call(formValues, property)) {
+        birthData[property] = formValues[property];
+      }
+    }
+  }, [formValues]);
+
   // unknown
   useEffect(() => {
     if (unknown) {
@@ -329,7 +359,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
   /* <- Handle Input Changes & Form Submission -> */
   const handleChange = (e) => {
     setValues({ ...formValues, [e.target.name]: e.target.value });
-    birthData[e.target.name] = e.target.value;
 
     if (e.target.name === 'zodiac' || e.target.name === 'houseSystem') {
       MOMENTDATA[e.target.name] = e.target.value;

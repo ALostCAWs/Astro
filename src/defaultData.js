@@ -15,16 +15,16 @@ const MOMENTDATA = {
 }
 const BIRTHDATA = {
   type: 'birth',
-  year: 1998,
-  month: 2,
-  day: 29,
-  hour: 9,
-  unknown: false,
-  minute: 10,
-  latitude: 43.14,
-  longitude: -80.25,
-  zodiac: 'tropical',
-  houseSystem: 'placidus',
+  // year: 1998,
+  // month: 2,
+  // day: 29,
+  // hour: 9,
+  // unknown: false,
+  // minute: 10,
+  // latitude: 0.00,
+  // longitude: 0.00,
+  // zodiac: 'tropical',
+  // houseSystem: 'placidus',
 };
 /* <-- Populate Select Lists --> */
 const MONTHS = [

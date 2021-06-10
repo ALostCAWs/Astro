@@ -93,6 +93,24 @@ const DisplayStellia = ({ stellia }) => {
     </>
   );
 }
+const DisplayRetrogrades = ({ planet }) => {
+  /* Avoid displaying planets that don't retrograde & non-planets */
+  return (
+    <>
+      {(planet.label !== 'Sun' && planet.label !== 'Moon' && planet.label !== 'Chiron' && planet.label !== 'Sirius') ? (
+        <>
+          {planet.isRetrograde ? (
+            <>
+              <p>{planet.label}</p>
+              <p>{planet.Sign.label}</p>
+              <p className='house'>{planet.House.id}</p>
+            </>
+          ) : (null)}
+        </>
+      ) : (null)}
+    </>
+  );
+}
 /* End ---- */
 
 /* ---- Exports Section */
@@ -102,10 +120,25 @@ export {
   DisplayPlanetData,
   DisplayHouseData,
   DisplayStellia,
+  DisplayRetrogrades,
 }
 /* End ---- */
 
 /* <- PropTypes -> */
+DisplayMethods.propTypes = {
+  zodiac: string,
+  houseSystem: string,
+}
+DisplayDateTimeLocation.propTypes = {
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  latitude: number,
+  longitude: number,
+  unknown: bool,
+}
 DisplayPlanetData.propTypes = {
   planet: object,
 }
@@ -119,17 +152,6 @@ DisplayDegreesMinutes.propTypes = {
 DisplayStellia.propTypes = {
   stellia: array,
 }
-DisplayDateTimeLocation.propTypes = {
-  year: number,
-  month: number,
-  day: number,
-  hour: number,
-  minute: number,
-  latitude: number,
-  longitude: number,
-  unknown: bool,
-}
-DisplayMethods.propTypes = {
-  zodiac: string,
-  houseSystem: string,
+DisplayRetrogrades.propTypes = {
+  planet: object,
 }
