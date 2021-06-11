@@ -206,8 +206,14 @@ const CreateHoroscope = ({ chartData }) => {
     chartData.zodiac,
     chartData.houseSystem
   );
-
   /* <-- Return UI --> */
+  if (chartData.type === 'birth' && chartData.zodiac === 'sidereal') {
+    console.log(`%cSidereal Birth Chart`, 'border: 1px solid red; padding: 10px ;');
+    console.log(horoscope);
+  } else if (chartData.type === 'moment' && chartData.zodiac === 'sidereal') {
+    console.log(`%cSidereal Moment Chart`, 'border: 1px solid green; padding: 10px ;');
+    console.log(horoscope);
+  }
   return (
     <>
       {chartData.type === 'moment' ? (
@@ -222,11 +228,68 @@ const CreateHoroscope = ({ chartData }) => {
   );
 }
 
+/* ---- Display Zodiac Methods & House Systems ----
+  <-- Props
+    chartData
+      - BIRTHDATA object
+    zodiacs, houseSystems
+      - Uses the data in their corresponding objects to populate the forms' select list dropdowns
+  ----
+  <-- Hooks (useState)
+    systemValues
+      - Holds default data shown on the charts' page load
+      - Watches for changes
+      - Updates MOMENTDATA & chartData on change
+  ----
+  <-- Functions
+    handleChange
+      - Updates systemValues, MOMENTDATA, & birthData on every change
+  ----
+  Displays select lists for zodiac methods & house systems
+  Calls CreateHoroscope (Birth Chart)
+  Calls CreateHoroscope (Moment Chart)
+  Re-loads on every change to the select lists to update the chart to display the desired calculations
+*/
+const DisplayMethodsSelect = ({ chartData, zodiacs, houseSystems }) => {
+  /* ---- Hooks ---- */
+  /* <- State -> */
+  const [systemValues, setValues] = useState({
+    zodiac: 'sidereal',
+    houseSystem: 'placidus',
+  });
+
+  /* <- Handle Input Changes & Form Submission -> */
+  const handleChange = (e) => {
+    setValues({ ...systemValues, [e.target.name]: e.target.value });
+    MOMENTDATA[e.target.name] = e.target.value;
+    chartData[e.target.name] = e.target.value;
+  }
+
+  return (
+    <>
+      <article>
+        <div className="system">
+          <label htmlFor='zodiac' className='system'>Zodiac:</label>
+          <select id='zodiac' className='system' name='zodiac' value={systemValues.zodiacType} onChange={handleChange}>
+            {zodiacs.map((zodiac) => <option key={zodiac.value} value={zodiac.value}>{zodiac.label}</option>)}
+          </select>
+          <label htmlFor='houseSystem' className='system'>System:</label>
+          <select id='houseSystem' className='system' name='houseSystem' value={systemValues.zodiacType} onChange={handleChange}>
+            {houseSystems.map((system) => <option key={system.value} value={system.value}>{system.label}</option>)}
+          </select>
+        </div>
+      </article>
+      <CreateHoroscope chartData={chartData} />
+      <CreateHoroscope chartData={MOMENTDATA} />
+    </>
+  );
+}
+
 /* ---- Form Display ----
   <-- Props
     birthData
       - Updates key:value pairs in the BIRTHDATA object
-    months, days, hours, minutes, zodiacs, houseSystems
+    months, days, hours, minutes
       - Uses the data in their corresponding objects to populate the forms' select list dropdowns
   ----
   <-- Hooks (useState, useEffect)
@@ -254,7 +317,7 @@ const CreateHoroscope = ({ chartData }) => {
               - false - MOMENTDATA & formValues: latitude/longitude = 0.00/0.00
     submit
       - Tracks when user submits the form
-      - Calls CreateHoroscope component
+      - Calls DisplayMethodsSelect component
   ----
   <-- Functions
     handleChange
@@ -265,9 +328,9 @@ const CreateHoroscope = ({ chartData }) => {
   Uses objects to fill out select list dropdowns
   Collects user inputs
   Updates values in objects when appropriate, depending on the inputs/changes that were made
-  Calls CreateHoroscope (Birth Chart) when submitted
+  Calls DisplayMethodsSelect when submitted
 */
-const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSystems }) => {
+const AstroForm = ({ birthData, months, days, hours, minutes }) => {
   /* ---- Hooks ---- */
   /* <- State -> */
   const [formValues, setValues] = useState({
@@ -278,8 +341,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
     minute: 10,
     latitude: 0,
     longitude: 0,
-    zodiac: 'tropical',
-    houseSystem: 'placidus',
   });
   const [unknown, setUnknown] = useState(false);
   const [useLocation, setLocation] = useState(false);
@@ -356,13 +417,10 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
     }
   }, [useLocation]);
 
+
   /* <- Handle Input Changes & Form Submission -> */
   const handleChange = (e) => {
     setValues({ ...formValues, [e.target.name]: e.target.value });
-
-    if (e.target.name === 'zodiac' || e.target.name === 'houseSystem') {
-      MOMENTDATA[e.target.name] = e.target.value;
-    }
   }
 
   /* <-- Return UI --> */
@@ -399,7 +457,6 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
                 <input type='checkbox' id='unknown' className='unknown' name='unknown' value={unknown} onChange={() => setUnknown(unknown => !unknown)}></input>
               </div>
 
-
               <div className="location">
                 <label htmlFor='latitude' className='location'>Latitude:</label>
                 <input type='number' id='latitude' className='location' name='latitude' min='-90.00' max='90.00' value={formValues.latitude} onChange={handleChange} />
@@ -407,25 +464,14 @@ const AstroForm = ({ birthData, months, days, hours, minutes, zodiacs, houseSyst
                 <input type='number' id='longitude' className='location' name='longitude' min='-90.00' max='90.00' value={formValues.longitude} onChange={handleChange} />
                 <button type='button' id='useLocation' className='location' name='useLocation' onClick={() => setLocation(useLocation => !useLocation)}>Use my Location</button>
               </div>
-
-              <div className="system">
-                <label htmlFor='zodiac' className='system'>Zodiac:</label>
-                <select id='zodiac' className='system' name='zodiac' value={formValues.zodiacType} onChange={handleChange}>
-                  {zodiacs.map((zodiac) => <option key={zodiac.value} value={zodiac.value}>{zodiac.label}</option>)}
-                </select>
-                <label htmlFor='houseSystem' className='system'>System:</label>
-                <select id='houseSystem' className='system' name='houseSystem' value={formValues.zodiacType} onChange={handleChange}>
-                  {houseSystems.map((system) => <option key={system.value} value={system.value}>{system.label}</option>)}
-                </select>
-              </div>
               <button type='button' id='submit' name='submit' onClick={() => setSubmit(true)}>Calculate Chart</button>
             </form>
           </article>
+          <CreateHoroscope chartData={MOMENTDATA} />
         </>
       ) : (
-        <CreateHoroscope chartData={birthData} />
+        <DisplayMethodsSelect chartData={birthData} zodiacs={ZODIACS} houseSystems={HOUSESYSTEMS} />
       )}
-      <CreateHoroscope chartData={MOMENTDATA} />
     </>
   );
 }
@@ -450,14 +496,17 @@ function App() {
 export default App;
 
 /* <- PropTypes -> */
+DisplayMethodsSelect.propTypes = {
+  chartData: object,
+  zodiacs: array,
+  houseSystems: array,
+}
 AstroForm.propTypes = {
   birthData: object,
   months: array,
   days: array,
   hours: array,
   minutes: array,
-  zodiacs: array,
-  houseSystems: array,
 }
 CreateHoroscope.propTypes = {
   chartData: object,

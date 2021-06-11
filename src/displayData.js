@@ -31,6 +31,8 @@ const DisplayPlanetData = ({ planet, unknown }) => {
   /* Skip over non-planets that appear in the array */
   /* Avoid display of houses when birth time is unknown */
   if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
+    console.log(planet.label);
+    console.log(planet.House.id);
     return (
       <>
         <p className='planet'>{planet.label}</p>
