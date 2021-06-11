@@ -209,10 +209,10 @@ const CreateHoroscope = ({ chartData }) => {
   /* <-- Return UI --> */
   if (chartData.type === 'birth' && chartData.zodiac === 'sidereal') {
     console.log(`%cSidereal Birth Chart`, 'border: 1px solid red; padding: 10px ;');
-    console.log(horoscope);
+    console.log(horoscope._celestialBodies.all);
   } else if (chartData.type === 'moment' && chartData.zodiac === 'sidereal') {
     console.log(`%cSidereal Moment Chart`, 'border: 1px solid green; padding: 10px ;');
-    console.log(horoscope);
+    console.log(horoscope._celestialBodies.all);
   }
   return (
     <>
