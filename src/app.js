@@ -16,6 +16,7 @@ import {
   HOUSESYSTEMS,
 } from './defaultData.js';
 import {
+  GetChartRuler,
   GetDateTimeLocationMethods,
   GetSignHouseSets,
 } from './getData.js';
@@ -57,6 +58,10 @@ const BirthChart = ({ horoscope, unknown }) => {
   /* <-- Planet, Sign, House Logs --> */
   const planets = horoscope._celestialBodies.all;
   const houses = horoscope._houses;
+  const acHouse = houses[0];
+  // const icHouse = houses[0];
+  // const dcHouse = houses[0];
+  // const mcHouse = houses[0];
   console.log(`%cHouses`, 'border: 1px solid white; padding: 10px ;');
   console.log(houses);
 
@@ -74,27 +79,33 @@ const BirthChart = ({ horoscope, unknown }) => {
         </div>
         <div className='chart'>
           {planets.map((planet) => (
-            <>
+            <React.Fragment key={planet.label}>
               <DisplayPlanetData
                 planet={planet}
                 unknown={unknown}
               />
-            </>
+            </React.Fragment>
           ))}
         </div>
-        <h3>House Placements</h3>
-        <div className='houses'>
-          {!unknown ? (
-            <>
+        {!unknown ? (
+          <>
+            <h3>House Placements</h3>
+            <div className='houses'>
               {houses.map((house) => (
-                <>
+                <React.Fragment key={house.label}>
                   <DisplayHouseData house={house} />
-                </>
+                </React.Fragment>
               ))
               }
-            </>
-          ) : (null)}
-        </div>
+            </div>
+            <h3>Chart Ruler</h3>
+            <div className='stellia'>
+              <>
+                <GetChartRuler acHouse={acHouse} planets={planets} />
+              </>
+            </div>
+          </>
+        ) : (null)}
         <h3>Stellia</h3>
         <div className='stellia'>
           <GetSignHouseSets planets={planets} unknown={unknown} />
@@ -102,9 +113,9 @@ const BirthChart = ({ horoscope, unknown }) => {
         <h3>Retrogrades</h3>
         <div className='retrogrades'>
           {planets.map((planet) => (
-            <>
+            <React.Fragment key={planet.label + ' Rx'}>
               <DisplayRetrogrades planet={planet} />
-            </>
+            </React.Fragment>
           ))}
         </div>
       </article>
@@ -154,17 +165,19 @@ const ChartOfTheMoment = ({ horoscope }) => {
         </div>
         <div className='chart'>
           {planets.map((planet) => (
-            <>
-              <DisplayPlanetData planet={planet} />
-            </>
+            <React.Fragment key={planet.label}>
+              <DisplayPlanetData
+                planet={planet}
+              />
+            </React.Fragment>
           ))}
         </div>
         <h3>Current Houses</h3>
         <div className='houses'>
           {houses.map((house) => (
-            <>
+            <React.Fragment key={house.label}>
               <DisplayHouseData house={house} />
-            </>
+            </React.Fragment>
           ))}
         </div>
         <h3>Current Stellia</h3>
@@ -174,9 +187,9 @@ const ChartOfTheMoment = ({ horoscope }) => {
         <h3>Current Retrogrades</h3>
         <div className='retrogrades'>
           {planets.map((planet) => (
-            <>
+            <React.Fragment key={planet.label + ' Rx'}>
               <DisplayRetrogrades planet={planet} />
-            </>
+            </React.Fragment>
           ))}
         </div>
       </article>
@@ -207,11 +220,11 @@ const CreateHoroscope = ({ chartData }) => {
     chartData.houseSystem
   );
   /* <-- Return UI --> */
-  if (chartData.type === 'birth' && chartData.zodiac === 'sidereal') {
-    console.log(`%cSidereal Birth Chart`, 'border: 1px solid red; padding: 10px ;');
+  if (chartData.type === 'birth') {
+    console.log(`%cBirth Chart`, 'border: 1px solid red; padding: 10px ;');
     console.log(horoscope._celestialBodies.all);
-  } else if (chartData.type === 'moment' && chartData.zodiac === 'sidereal') {
-    console.log(`%cSidereal Moment Chart`, 'border: 1px solid green; padding: 10px ;');
+  } else if (chartData.type === 'moment') {
+    console.log(`%cMoment Chart`, 'border: 1px solid green; padding: 10px ;');
     console.log(horoscope._celestialBodies.all);
   }
   return (

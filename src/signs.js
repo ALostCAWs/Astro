@@ -60,7 +60,7 @@ const Sign = class {
 }
 
 /* ---- Sign Array ---- */
-export const Signs = [];
+const Signs = [];
 
 /* ---- Sign Objects ---- */
 /* <- Aries -> */
@@ -194,3 +194,8 @@ decans = [
 ];
 const Pisces = new Sign(12, 'Pisces', 'I believe', 'Water', 'Feminine', 'Mutable', 'Winter', 'Jupiter', 'Neptune', bodyRulers, attributes, decans);
 Signs.push(Pisces);
+
+/* ---- Exports Section */
+export {
+  Signs,
+}

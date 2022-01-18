@@ -1,6 +1,7 @@
 /* ---- Imports Section */
 import React from 'react';
 import { object, array, bool, string, number } from 'prop-types';
+// import { Signs } from './signs';
 /* End ---- */
 
 /* ---- Display Components */
@@ -27,17 +28,25 @@ const DisplayDateTimeLocation = ({ year, month, day, hour, minute, latitude, lon
     return (<p>{date} at {Math.abs(latitude)}&deg; {NS}, {Math.abs(longitude)}&deg; {EW}</p>);
   }
 }
+
 const DisplayPlanetData = ({ planet, unknown }) => {
   /* Skip over non-planets that appear in the array */
   /* Avoid display of houses when birth time is unknown */
   if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
-    console.log(planet.label);
-    console.log(planet.House.id);
     return (
       <>
-        <p className='planet'>{planet.label}</p>
+        {planet.isRetrograde ? (
+          <>
+            <p>{planet.label} Rx</p>
+          </>
+        ) : (
+          <>
+            <p className='planet'>{planet.label}</p>
+          </>
+        )}
         <p className='sign'>{planet.Sign.label}</p>
         <DisplayDegreesMinutes
+          planet={planet.label}
           degreesFormatted={planet.ChartPosition.Ecliptic.ArcDegreesFormatted30}
           retrograde={planet.isRetrograde}
         />
@@ -59,7 +68,7 @@ const DisplayDegreesMinutes = ({ degreesFormatted, retrograde }) => {
   return (
     <>
       {(retrograde) ? (
-        <p className='degrees'>{deg} {minSec} R</p>
+        <p className='degrees'>{deg} {minSec} Rx</p>
       ) : (
         <p className='degrees'>{deg} {minSec}</p>
       )}
@@ -74,8 +83,28 @@ const DisplayHouseData = ({ house }) => {
     </>
   );
 }
+const DisplayChartRuler = ({ acSign, chartTraditionalRuler, chartModernRuler }) => {
+
+  const sign = acSign.name;
+  const traditionalRulerName = chartTraditionalRuler.label;
+  const modernRulerName = chartModernRuler.label;
+
+  return (
+    <>
+      {(modernRulerName !== traditionalRulerName) ? (
+        <>
+          <p className='sign'>{modernRulerName} in {sign}</p>
+          <p className='sign'>{traditionalRulerName} in {sign}</p>
+        </>
+      ) : (
+        <>
+          <p className='sign'>{traditionalRulerName} in {sign}</p>
+        </>
+      )}
+    </>
+  );
+}
 const DisplayStellia = ({ stellia }) => {
-  console.log(stellia);
   /* <-- Return UI --> */
   /* Avoid displaying empty stellia grids */
   return (
@@ -83,27 +112,27 @@ const DisplayStellia = ({ stellia }) => {
       {stellia.length != 0 ? (
         <>
           {stellia.map((stellium) => (
-            <>
-              <p className='label'>{stellium.label}</p>
+            <React.Fragment key={stellium.label}>
+              <p className='label'>{stellium.label} {stellium.id}</p>
               <p className='occurrences'>{stellium.occurrences}</p>
-            </>
+            </React.Fragment>
           ))}
         </>
       ) : (
-        <p className='no-stellia'>No stellia found in the given chart</p>
+        <p className='no-stellia'>No stellia found within this chart</p>
       )}
     </>
   );
 }
 const DisplayRetrogrades = ({ planet }) => {
-  /* Avoid displaying planets that don't retrograde & non-planets */
+  /* Avoid displaying planets that don't retrograde & non-planet celestial bodies */
   return (
     <>
       {(planet.label !== 'Sun' && planet.label !== 'Moon' && planet.label !== 'Chiron' && planet.label !== 'Sirius') ? (
         <>
           {planet.isRetrograde ? (
             <>
-              <p>{planet.label}</p>
+              <p>{planet.label} Rx</p>
               <p>{planet.Sign.label}</p>
               <p className='house'>{planet.House.id}</p>
             </>
@@ -121,6 +150,7 @@ export {
   DisplayDateTimeLocation,
   DisplayPlanetData,
   DisplayHouseData,
+  DisplayChartRuler,
   DisplayStellia,
   DisplayRetrogrades,
 }
@@ -143,9 +173,15 @@ DisplayDateTimeLocation.propTypes = {
 }
 DisplayPlanetData.propTypes = {
   planet: object,
+  unknown: bool,
 }
 DisplayHouseData.propTypes = {
   house: object,
+}
+DisplayChartRuler.propTypes = {
+  acSign: object,
+  chartTraditionalRuler: object,
+  chartModernRuler: object,
 }
 DisplayDegreesMinutes.propTypes = {
   degreesFormatted: string,

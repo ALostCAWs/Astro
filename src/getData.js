@@ -3,22 +3,24 @@ import React from 'react';
 import { object, array, bool, string } from 'prop-types';
 import {
   DisplayStellia,
+  DisplayChartRuler,
   DisplayDateTimeLocation,
   DisplayMethods,
 } from './displayData';
 import './main.css';
+import { Signs } from './signs';
 /* End ---- */
 
 /* ---- Get Data for Display Components Section */
 const CalculateStellia = ({ placementArr, placementSet }) => {
   const stellia = [];
-  placementSet.forEach(sign => {
+  placementSet.forEach(signHouse => {
     let occurrences = placementArr.reduce(function (n, p) {
-      return n + (p === sign);
+      return n + (p === signHouse);
     }, 0);
     if (occurrences >= 3) {
       stellia.push(
-        { label: sign, occurrences: occurrences },
+        { label: signHouse, occurrences: occurrences },
       );
     }
   });
@@ -37,7 +39,7 @@ const GetSignHouseSets = ({ planets, unknown }) => {
   planets.forEach(planet => {
     /* <-- Variable Declarations --> */
     const sign = planet.Sign.label;
-    const house = planet.House.label;
+    const house = planet.House.label + ' House';
 
     /* Avoid adding data from non-planets to the arrays / sets */
     if (planet.label !== 'Chiron' && planet.label !== 'Sirius') {
@@ -79,6 +81,25 @@ const GetDateTimeLocationMethods = ({ origin, zodiac, houseSystem, unknown }) =>
     </>
   );
 }
+const GetChartRuler = ({ acHouse, planets }) => {
+  const acSign = Signs.find(sign => sign.name == acHouse.Sign.label);
+  let chartTraditionalRuler = acSign.traditionalRuler;
+  chartTraditionalRuler = planets.find(planet => planet.label == chartTraditionalRuler);
+  let chartModernRuler = acSign.modernRuler;
+
+  chartModernRuler !== '' ? (chartModernRuler = planets.find(planet => planet.label == chartModernRuler))
+    : (chartModernRuler = chartTraditionalRuler);
+
+  return (
+    <>
+      <DisplayChartRuler
+        acSign={acSign}
+        chartTraditionalRuler={chartTraditionalRuler}
+        chartModernRuler={chartModernRuler}
+      />
+    </>
+  );
+}
 /* End ---- */
 
 /* ---- Exports Section */
@@ -86,6 +107,7 @@ export {
   CalculateStellia,
   GetSignHouseSets,
   GetDateTimeLocationMethods,
+  GetChartRuler,
 }
 /* End ---- */
 
@@ -97,6 +119,10 @@ GetSignHouseSets.propTypes = {
 CalculateStellia.propTypes = {
   placementArr: array,
   placementSet: object,
+}
+GetChartRuler.propTypes = {
+  acHouse: object,
+  planets: array,
 }
 GetDateTimeLocationMethods.propTypes = {
   origin: object,
